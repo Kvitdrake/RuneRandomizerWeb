@@ -1,0 +1,48 @@
+﻿@page
+@model webb_tst_site3.Pages.Admin.Spheres.CreateModel
+@{
+    ViewData["Title"] = "Добавление сферы";
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    <form method="post" class="mt-4">
+        <div class="mb-3">
+            <label asp-for="Sphere.Name" class="form-label">Название *</label>
+            <input asp-for="Sphere.Name" class="form-control" required />
+            <span asp-validation-for="Sphere.Name" class="text-danger"></span>
+        </div>
+
+        <!-- Для создания сферы (Pages/Admin/Spheres/Create.cshtml) -->
+        <div class="mb-3">
+            <label asp-for="Sphere.Description" class="form-label">Описание</label>
+            <textarea asp-for="Sphere.Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Sphere.ImageUrl" class="form-label">Ссылка на изображение</label>
+            <input asp-for="Sphere.ImageUrl" class="form-control" placeholder="https://example.com/sphere-image.jpg" />
+            <small class="text-muted">Оставьте пустым для изображения по умолчанию</small>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a asp-page="Index" class="btn btn-secondary me-md-2">Отмена</a>
+            <button type="submit" class="btn btn-primary">Создать</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,57 @@
+﻿@page
+@model webb_tst_site3.Pages.Admin.Spheres.IndexModel
+@{
+    ViewData["Title"] = "Управление сферами";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+        <a asp-page="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Добавить сферу
+        </a>
+    </div>
+
+    @if (Model.Spheres.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var sphere in Model.Spheres)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-img-top text-center p-3 bg-light">
+                            <img src="@(sphere.ImageUrl ?? "/images/default-sphere.png")" 
+                                 class="img-fluid" style="max-height: 150px;"
+                                 onerror="this.onerror=null;this.src='/images/default-sphere.png'">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@sphere.Name</h5>
+                            @if (!string.IsNullOrEmpty(sphere.Description))
+                            {
+                                <p class="card-text text-muted">@sphere.Description</p>
+                            }
+                        </div>
+                        <div class="card-footer bg-white">
+                            <div class="d-flex justify-content-between">
+                                <a asp-page="Edit" asp-route-id="@sphere.Id" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Изменить
+                                </a>
+                                <form method="post" asp-page-handler="Delete" asp-route-id="@sphere.Id">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i> Удалить
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Нет доступных сфер. Создайте первую сферу.
+        </div>
+    }
+</div>

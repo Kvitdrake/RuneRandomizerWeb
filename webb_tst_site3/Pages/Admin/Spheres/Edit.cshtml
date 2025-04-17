@@ -1,0 +1,45 @@
+﻿@page "{id:int}"
+@model webb_tst_site3.Pages.Admin.Spheres.EditModel
+@{
+    ViewData["Title"] = "Редактирование сферы";
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    <form method="post">
+        <input type="hidden" asp-for="Sphere.Id" />
+
+        <div class="mb-3">
+            <label asp-for="Sphere.Name" class="form-label">Название *</label>
+            <input asp-for="Sphere.Name" class="form-control" required />
+            <span asp-validation-for="Sphere.Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Sphere.Description" class="form-label">Описание</label>
+            <textarea asp-for="Sphere.Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Sphere.ImageUrl" class="form-label">Ссылка на изображение</label>
+            <input asp-for="Sphere.ImageUrl" class="form-control" />
+            <small class="text-muted">Оставьте пустым для изображения по умолчанию</small>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a asp-page="Index" class="btn btn-secondary me-md-2">Отмена</a>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+            <a asp-page="Index" class="btn btn-secondary me-md-2">
+                <i class="fas fa-arrow-left me-2"></i>Назад к списку
+            </a>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

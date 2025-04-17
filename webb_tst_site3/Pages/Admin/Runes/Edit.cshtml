@@ -1,0 +1,56 @@
+﻿@page "{id:int}"
+@model webb_tst_site3.Pages.Admin.Runes.EditModel
+@{
+    ViewData["Title"] = "Редактирование руны";
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    <form method="post">
+        <input type="hidden" asp-for="Rune.Id" />
+
+        <div class="mb-3">
+            <label asp-for="Rune.Name" class="form-label">Название *</label>
+            <input asp-for="Rune.Name" class="form-control" required />
+            <span asp-validation-for="Rune.Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Rune.BaseDescription" class="form-label">Основное описание *</label>
+            <textarea asp-for="Rune.BaseDescription" class="form-control" rows="3" required></textarea>
+            <span asp-validation-for="Rune.BaseDescription" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Rune.ImageUrl" class="form-label">Ссылка на изображение</label>
+            <input asp-for="Rune.ImageUrl" class="form-control" />
+            <small class="text-muted">Оставьте пустым для изображения по умолчанию</small>
+        </div>
+
+        <h4 class="mt-4">Описания для сфер:</h4>
+
+        @foreach (var sphere in Model.AllSpheres)
+        {
+            <div class="card mb-3">
+                <div class="card-header">
+                    @sphere.Name
+                </div>
+                <div class="card-body">
+                    <textarea name="SphereDescriptions[@sphere.Id]"
+                              class="form-control"
+                              rows="2">@Model.GetSphereDescription(sphere.Id)</textarea>
+                </div>
+            </div>
+        }
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+            <a asp-page="Index" class="btn btn-secondary me-md-2">Отмена</a>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

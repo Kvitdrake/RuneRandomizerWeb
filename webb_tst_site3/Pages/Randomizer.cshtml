@@ -1,0 +1,113 @@
+﻿@page
+@model RandomizerModel
+@{
+    ViewData["Title"] = "Генератор рун";
+}
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="display-4 mb-4">Генератор рун</h1>
+
+        <div class="card shadow-sm mx-auto mb-4" style="max-width: 600px;">
+            <div class="card-body">
+                <h5 class="card-title">Задайте вопрос и выберите сферу</h5>
+                <textarea id="questionInput" class="form-control mb-3" rows="3" placeholder="Введите ваш вопрос..."></textarea>
+
+                <select id="sphereSelect" class="form-select mb-4">
+                    <option value="">Все сферы</option>
+                    @foreach (var sphere in Model.Spheres)
+                    {
+                        <option value="@sphere.Id">@sphere.Name</option>
+                    }
+                </select>
+
+                <button id="generateBtn" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-random me-2"></i>Получить руну
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="text-center my-4" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="mt-2">Генерация руны...</p>
+        </div>
+
+        <div id="result" class="row justify-content-center"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', async function () {
+            const btn = this;
+            const question = document.getElementById('questionInput').value;
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            const sphereId = document.getElementById('sphereSelect').value;
+
+            if (!question) {
+                alert('Пожалуйста, введите ваш вопрос');
+                return;
+            }
+
+            btn.disabled = true;
+            resultDiv.innerHTML = '';
+            loadingDiv.style.display = 'block';
+
+            try {
+                const url = `/api/runes/random${sphereId ? `?sphereId=${sphereId}` : ''}`;
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error('Ошибка при загрузке данных');
+                }
+
+                const data = await response.json();
+
+                resultDiv.innerHTML = `
+                                    <div class="col-md-8">
+                                        <div class="card shadow mt-3">
+                                            <div class="card-header bg-primary text-white">
+                                                <h3 class="text-center">${data.name}</h3>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <p class="text-muted mb-4">Ваш вопрос: "${question}"</p>
+                                                <img src="${data.imageUrl}"
+                                                     class="img-fluid my-3"
+                                                     style="max-height: 200px;"
+                                                     onerror="this.src='/images/default-rune.png'">
+                                                <div class="card-text">${data.description.replace(/\n/g, '<br>')}</div>
+                                                ${data.sphereName ? `<div class="text-muted mt-2">Сфера: ${data.sphereName}</div>` : ''}
+                                            </div>
+                                            <div class="card-footer text-center">
+                                                <button id="generateAgainBtn" class="btn btn-primary">
+                                                    <i class="fas fa-redo me-2"></i>Сгенерировать снова
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+
+                document.getElementById('generateAgainBtn').addEventListener('click', function () {
+                    btn.click();
+                });
+            } catch (error) {
+                resultDiv.innerHTML = `
+                                    <div class="col-md-8">
+                                        <div class="alert alert-danger">
+                                            Ошибка: ${error.message}
+                                        </div>
+                                        <button class="btn btn-warning w-100" onclick="window.location.reload()">
+                                            <i class="fas fa-sync-alt me-2"></i>Попробовать снова
+                                        </button>
+                                    </div>
+                                `;
+            } finally {
+                loadingDiv.style.display = 'none';
+                btn.disabled = false;
+            }
+        });
+    </script>
+}

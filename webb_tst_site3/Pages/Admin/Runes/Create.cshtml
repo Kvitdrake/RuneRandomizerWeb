@@ -1,0 +1,135 @@
+﻿@page
+@model webb_tst_site3.Pages.Admin.Runes.CreateModel
+@{
+    ViewData["Title"] = "Добавление новой руны";
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post" class="mt-4">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Основная информация о руне -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Основная информация</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Rune.Name" class="form-label">Название руны *</label>
+                            <input asp-for="Rune.Name" class="form-control" required />
+                            <span asp-validation-for="Rune.Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Измените поле BaseDescription, убрав required -->
+                        <div class="mb-3">
+                            <label asp-for="Rune.BaseDescription" class="form-label">Основное описание</label>
+                            <textarea asp-for="Rune.BaseDescription" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Rune.BaseDescription" class="text-danger"></span>
+                        </div>
+
+                        <!-- Оставьте ImageUrl без изменений (уже необязательное) -->
+                        <div class="mb-3">
+                            <label asp-for="Rune.ImageUrl" class="form-label">Ссылка на изображение</label>
+                            <input asp-for="Rune.ImageUrl" class="form-control" placeholder="https://example.com/rune-image.jpg" />
+                            <small class="text-muted">Оставьте пустым для изображения по умолчанию</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Описания для каждой сферы -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Описания по сферам</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.AllSpheres.Any())
+                        {
+                            @foreach (var sphere in Model.AllSpheres)
+                            {
+                                <div class="mb-4 p-3 border rounded">
+                                    <h6 class="mb-3 text-primary">@sphere.Name</h6>
+
+                                    @if (sphere.Description != null && !string.IsNullOrEmpty(sphere.Description))
+                                    {
+                                        <p class="text-muted small mb-3">@sphere.Description</p>
+                                    }
+
+                                    <div class="form-group">
+                                        <label for="SphereDescriptions_@sphere.Id" class="form-label">Описание для этой сферы:</label>
+                                        <textarea name="SphereDescriptions[@sphere.Id]"
+                                                  id="SphereDescriptions_@sphere.Id"
+                                                  class="form-control"
+                                                  rows="3">@(Model.SphereDescriptions.ContainsKey(sphere.Id) ? Model.SphereDescriptions[sphere.Id] : "")</textarea>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                Нет доступных сфер. Сначала создайте сферы.
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Кнопки действий -->
+                <div class="d-flex justify-content-between">
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Назад к списку
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i> Создать руну
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Подсказки -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Подсказки</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            Поля со * обязательны для заполнения
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            Описание для каждой сферы можно добавить позже
+                        </li>
+                        <li>
+                            <i class="fas fa-image text-success me-2"></i>
+                            Размер изображения должен быть около 300x300px
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Автоматическая подстановка описания по умолчанию
+        document.getElementById('Rune_BaseDescription').addEventListener('input', function () {
+            const textareas = document.querySelectorAll('textarea[id^="SphereDescriptions_"]');
+            textareas.forEach(ta => {
+                if (!ta.value) {
+                    ta.value = this.value;
+                }
+            });
+        });
+    </script>
+}

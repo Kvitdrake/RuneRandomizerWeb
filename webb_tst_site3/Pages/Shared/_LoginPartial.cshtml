@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using System.Security.Claims
+@{
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+}
+
+<ul class="navbar-nav">
+    @if (isAuthenticated)
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-page="/Admin/Index">
+                <i class="fas fa-user me-1"></i> @User.Identity?.Name
+            </a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-page="/Admin/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link">
+                    <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                </button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-page="/Admin/Login">
+                <i class="fas fa-sign-in-alt me-1"></i>Вход
+            </a>
+        </li>
+    }
+</ul>

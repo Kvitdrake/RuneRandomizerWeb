@@ -1,0 +1,45 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Панель администратора";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Панель администратора</h1>
+        <div>
+            <a href="/Randomizer" class="btn btn-info me-2">Генератор</a>
+            <form method="post" asp-page="/Admin/Logout" class="d-inline">
+                <button type="submit" class="btn btn-danger">Выйти</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Секция рун -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Управление рунами</h5>
+                </div>
+                <div class="card-body">
+                    <a asp-page="/Admin/Runes/Index" class="btn btn-success w-100 mb-3">Все руны</a>
+                    <a asp-page="/Admin/Runes/Create" class="btn btn-primary w-100">Добавить руну</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Секция сфер -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Управление сферами</h5>
+                </div>
+                <div class="card-body">
+                    <a asp-page="/Admin/Spheres/Index" class="btn btn-success w-100 mb-3">Все сферы</a>
+                    <a asp-page="/Admin/Spheres/Create" class="btn btn-primary w-100">Добавить сферу</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

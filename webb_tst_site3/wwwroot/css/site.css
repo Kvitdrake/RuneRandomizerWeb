@@ -1,0 +1,198 @@
+/* Основные цвета */
+:root {
+    --primary-color: #6c5ce7;
+    --primary-dark: #5649c0;
+    --secondary-color: #0984e3;
+    --dark-color: #2d3436;
+    --light-color: #f5f6fa;
+}
+
+body {
+    background-color: #f8f9fa;
+    color: #2d3436;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Навигация */
+.navbar {
+    background-color: var(--dark-color) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: var(--light-color) !important;
+}
+
+/* Карточки рун и сфер */
+.card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: white;
+    margin-bottom: 20px;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+    }
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.card-img-top {
+    background-color: #f1f2f6;
+    padding: 20px;
+}
+
+/* Кнопки */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 10px;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+    }
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+/* Формы */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #dfe6e9;
+}
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
+    }
+
+/* Иконки */
+.fas {
+    margin-right: 5px;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Кнопки навигации */
+.nav-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+    .nav-button i {
+        margin-right: 8px;
+    }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 15px;
+    }
+}
+.draggable-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.draggable-card {
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.2s;
+    min-width: 250px;
+}
+
+    .draggable-card:active {
+        cursor: grabbing;
+        transform: scale(1.02);
+    }
+
+    .draggable-card.ghost {
+        opacity: 0.5;
+        background: #f8f9fa;
+    }
+
+/* Стили для формы создания руны */
+.card {
+    margin-bottom: 1.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+}
+
+.bg-primary {
+    background-color: #6c5ce7 !important;
+}
+
+.bg-info {
+    background-color: #0984e3 !important;
+}
+
+.form-control {
+    border-radius: 0.375rem;
+}
+
+textarea.form-control {
+    min-height: 100px;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.border {
+    border: 1px solid #dee2e6 !important;
+}
+
+.rounded {
+    border-radius: 0.375rem !important;
+}
