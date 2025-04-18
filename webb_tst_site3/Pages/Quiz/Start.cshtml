@@ -1,0 +1,17 @@
+﻿@page "{id:int}"
+@model webb_tst_site3.Pages.Quiz.StartModel
+@{
+    ViewData["Title"] = Model.Quiz.Title;
+}
+
+<div class="container text-center">
+    <h1>@Model.Quiz.Title</h1>
+    <p class="lead">@Model.Quiz.Description</p>
+
+    <a asp-page="./Question"
+       asp-route-quizId="@Model.Quiz.Id"
+       asp-route-questionNumber="1"
+       class="btn btn-primary btn-lg">
+        Начать тест
+    </a>
+</div>

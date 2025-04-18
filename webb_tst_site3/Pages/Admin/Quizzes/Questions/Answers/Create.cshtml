@@ -1,0 +1,43 @@
+﻿@page "{questionId:int}"
+@model webb_tst_site3.Pages.Admin.Quizzes.Questions.Answers.CreateModel
+@{
+    ViewData["Title"] = "Добавить ответ";
+}
+
+<div class="container">
+    <h2>@ViewData["Title"]</h2>
+    <p>Для вопроса: @Model.Question.Text</p>
+
+    <form method="post">
+        <input type="hidden" asp-for="Answer.QuestionId" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Answer.Text" class="form-label"></label>
+            <input asp-for="Answer.Text" class="form-control" required />
+            <span asp-validation-for="Answer.Text" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Answer.Score" class="form-label"></label>
+            <input asp-for="Answer.Score" class="form-control" type="number" min="1" value="1" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Answer.ResultId" class="form-label"></label>
+            <select asp-for="Answer.ResultId" class="form-control" required
+                    asp-items="Model.Results">
+                <option value="">-- Выберите результат --</option>
+            </select>
+            <span asp-validation-for="Answer.ResultId" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a asp-page="./Index" asp-route-questionId="@Model.Answer.QuestionId"
+           class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

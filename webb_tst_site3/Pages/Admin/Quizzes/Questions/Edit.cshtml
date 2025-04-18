@@ -1,0 +1,34 @@
+﻿@page "{id:int}"
+@model webb_tst_site3.Pages.Admin.Quizzes.Questions.EditModel
+@{
+    ViewData["Title"] = "Редактировать вопрос";
+}
+
+<div class="container">
+    <h2>@ViewData["Title"]</h2>
+
+    <form method="post">
+        <input type="hidden" asp-for="Question.Id" />
+        <input type="hidden" asp-for="Question.QuizId" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Question.Text" class="form-label"></label>
+            <textarea asp-for="Question.Text" class="form-control" rows="3" required></textarea>
+            <span asp-validation-for="Question.Text" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Question.Order" class="form-label"></label>
+            <input asp-for="Question.Order" class="form-control" type="number" min="1" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a asp-page="./Index" asp-route-quizId="@Model.Question.QuizId"
+           class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

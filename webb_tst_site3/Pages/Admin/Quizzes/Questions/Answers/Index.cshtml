@@ -1,0 +1,46 @@
+﻿@page "{questionId:int}"
+@model webb_tst_site3.Pages.Admin.Quizzes.Questions.Answers.IndexModel
+@{
+    ViewData["Title"] = "Ответы на вопрос";
+}
+
+<div class="container">
+    <h2>@ViewData["Title"]</h2>
+    <p class="lead">Вопрос: @Model.Question.Text</p>
+
+    <div class="mb-3">
+        <a asp-page="./Create" asp-route-questionId="@Model.Question.Id"
+           class="btn btn-primary">
+            Добавить ответ
+        </a>
+        <a asp-page="../Index" asp-route-quizId="@Model.Question.QuizId"
+           class="btn btn-secondary">
+            ← Назад к вопросам
+        </a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ответ</th>
+                <th>Баллы</th>
+                <th>Результат</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var answer in Model.Answers)
+            {
+                <tr>
+                    <td>@answer.Text</td>
+                    <td>@answer.Score</td>
+                    <td>@answer.Result?.Name</td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@answer.Id" class="btn btn-sm btn-warning">Ред.</a>
+                        <a asp-page="./Delete" asp-route-id="@answer.Id" class="btn btn-sm btn-danger">Удл.</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

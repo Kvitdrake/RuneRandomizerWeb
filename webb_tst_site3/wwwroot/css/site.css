@@ -196,3 +196,12 @@ textarea.form-control {
 .rounded {
     border-radius: 0.375rem !important;
 }
+
+.progress {
+    height: 20px;
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}

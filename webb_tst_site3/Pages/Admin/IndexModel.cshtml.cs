@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using webb_tst_site3.Data;
 using Microsoft.EntityFrameworkCore;
 using webb_tst_site3.Models;
-using webb_tst_site3.Pages;
 
 namespace webb_tst_site3.Pages.Admin
 {
@@ -15,11 +14,15 @@ namespace webb_tst_site3.Pages.Admin
             _context = context;
         }
 
-        public List<Sphere> Spheres { get; set; } // Добавлено свойство для сфер
+        public int RunesCount { get; set; }
+        public int SpheresCount { get; set; }
+        public int QuizzesCount { get; set; }
 
         public async Task OnGetAsync()
         {
-            Spheres = await _context.Spheres.ToListAsync(); // Загружаем сферы
+            RunesCount = await _context.Runes.CountAsync();
+            SpheresCount = await _context.Spheres.CountAsync();
+            QuizzesCount = await _context.Quizzes.CountAsync();
         }
     }
 }

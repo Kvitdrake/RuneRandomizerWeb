@@ -1,0 +1,19 @@
+﻿@page
+@model webb_tst_site3.Pages.Quiz.IndexModel
+@{
+    ViewData["Title"] = "Доступные тесты";
+}
+
+<div class="container">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    <div class="list-group">
+        @foreach (var quiz in Model.Quizzes)
+        {
+            <a asp-page="./Start" asp-route-id="@quiz.Id"
+               class="list-group-item list-group-item-action">
+                @quiz.Title
+            </a>
+        }
+    </div>
+</div>

@@ -1,0 +1,81 @@
+﻿@page "{quizId:int}"
+@model webb_tst_site3.Pages.Admin.Quizzes.Results.IndexModel
+@{
+    ViewData["Title"] = "Управление результатами";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@ViewData["Title"]</h2>
+        <a asp-page="../Questions/Index" asp-route-quizId="@Model.Quiz.Id" class="btn btn-outline-secondary">
+            ← К вопросам
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Квиз: @Model.Quiz.Title</h5>
+        </div>
+    </div>
+
+    <a asp-page="./Create" asp-route-quizId="@Model.Quiz.Id" class="btn btn-success mb-3">
+        <i class="fas fa-plus"></i> Добавить результат
+    </a>
+
+    @if (Model.Results.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Изображение</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var result in Model.Results)
+                    {
+                        <tr>
+                            <td>@result.Name</td>
+                            <td>@result.Description</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(result.ImageUrl))
+                                {
+                                    <img src="@result.ImageUrl" style="max-height: 50px;" class="img-thumbnail" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Нет изображения</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@result.Id" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Изменить
+                                </a>
+                                <a asp-page="./Delete" asp-route-id="@result.Id" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i> Удалить
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> Нет добавленных результатов
+        </div>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

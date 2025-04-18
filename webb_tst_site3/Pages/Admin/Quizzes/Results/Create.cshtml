@@ -1,0 +1,39 @@
+﻿@page "{quizId:int}"
+@model webb_tst_site3.Pages.Admin.Quizzes.Results.CreateModel
+@{
+    ViewData["Title"] = "Добавить результат";
+}
+
+<div class="container">
+    <h2>@ViewData["Title"]</h2>
+    <h4>Для квиза: @Model.Quiz.Title</h4>
+
+    <form method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Result.QuizId" />
+
+        <div class="form-group mb-3">
+            <label asp-for="Result.Name" class="form-label">Название результата</label>
+            <input asp-for="Result.Name" class="form-control" required />
+            <span asp-validation-for="Result.Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Result.Description" class="form-label">Описание</label>
+            <textarea asp-for="Result.Description" class="form-control" rows="5" required></textarea>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="ImageFile" class="form-label">Изображение (необязательно)</label>
+            <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a asp-page="./Index" asp-route-quizId="@Model.Result.QuizId" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

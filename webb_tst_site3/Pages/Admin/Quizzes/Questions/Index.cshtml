@@ -1,0 +1,79 @@
+﻿@page "{quizId:int}"
+@model webb_tst_site3.Pages.Admin.Quizzes.Questions.IndexModel
+@{
+    ViewData["Title"] = "Вопросы квиза";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Вопросы для: @Model.Quiz.Title</h2>
+        <div>
+            <a asp-page="../Results/Index" asp-route-quizId="@Model.Quiz.Id" class="btn btn-info me-2">
+                <i class="fas fa-star"></i> Управление результатами
+            </a>
+            <a asp-page="./Create" asp-route-quizId="@Model.Quiz.Id" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Добавить вопрос
+            </a>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <a asp-page="../Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Назад к списку квизов
+        </a>
+    </div>
+
+    @if (Model.Questions.Any())
+    {
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Текст вопроса</th>
+                    <th>Порядок</th>
+                    <th>Кол-во ответов</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var question in Model.Questions.OrderBy(q => q.Order))
+                {
+                    <tr>
+                        <td>@question.Text</td>
+                        <td>@question.Order</td>
+                        <td>@(question.Answers?.Count ?? 0)</td>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@question.Id" class="btn btn-sm btn-warning" title="Редактировать">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a asp-page="./Delete" asp-route-id="@question.Id" class="btn btn-sm btn-danger" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                            <a asp-page="./Answers/Index" asp-route-questionId="@question.Id"
+                               class="btn btn-sm btn-info" title="Ответы">
+                                <i class="fas fa-list"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            В этом квизе пока нет вопросов. Нажмите "Добавить вопрос" чтобы создать первый.
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .table th {
+            white-space: nowrap;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+}

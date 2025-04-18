@@ -32,6 +32,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
 });
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddAntiforgery();
+
 var app = builder.Build();
 
 /*// Инициализация БД
