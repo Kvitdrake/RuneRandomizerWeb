@@ -1,3 +1,4 @@
+// Pages/Admin/Quizzes/Results/Edit.cshtml.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using webb_tst_site3.Data;
@@ -13,22 +14,22 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Results
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _environment;
 
-        public EditModel(AppDbContext context, IWebHostEnvironment environment)
-        {
-            _context = context;
-            _environment = environment;
-        }
-
         [BindProperty]
         public Result Result { get; set; }
 
         [BindProperty]
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
         [BindProperty]
         public bool DeleteImage { get; set; }
 
         public Models.Quiz Quiz { get; set; }
+
+        public EditModel(AppDbContext context, IWebHostEnvironment environment)
+        {
+            _context = context;
+            _environment = environment;
+        }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -36,10 +37,7 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Results
                 .Include(r => r.Quiz)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (Result == null)
-            {
-                return NotFound();
-            }
+            if (Result == null) return NotFound();
 
             Quiz = Result.Quiz;
             return Page();
@@ -47,6 +45,15 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Results
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Удаляем ошибки валидации для Quiz
+            ModelState.Remove("Result.Quiz");
+
+            if (string.IsNullOrWhiteSpace(Result.Name))
+                ModelState.AddModelError("Result.Name", "Название обязательно");
+
+            if (string.IsNullOrWhiteSpace(Result.Description))
+                ModelState.AddModelError("Result.Description", "Описание обязательно");
+
             if (!ModelState.IsValid)
             {
                 Quiz = await _context.Quizzes.FindAsync(Result.QuizId);
@@ -106,10 +113,7 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Results
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return RedirectToPage("./Index", new { quizId = Result.QuizId });

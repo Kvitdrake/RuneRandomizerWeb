@@ -8,32 +8,36 @@
     <h2>@ViewData["Title"]</h2>
     <h4>Для квиза: @Model.Quiz.Title</h4>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post">
+        <!-- Скрытое поле для QuizId -->
         <input type="hidden" asp-for="Result.QuizId" />
 
+        <div asp-validation-summary="All" class="text-danger"></div>
+
         <div class="form-group mb-3">
-            <label asp-for="Result.Name" class="form-label">Название результата</label>
-            <input asp-for="Result.Name" class="form-control" required />
+            <label asp-for="Result.Name" class="form-label">Название*</label>
+            <input asp-for="Result.Name" class="form-control" />
             <span asp-validation-for="Result.Name" class="text-danger"></span>
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Result.Description" class="form-label">Описание</label>
-            <textarea asp-for="Result.Description" class="form-control" rows="5" required></textarea>
+            <label asp-for="Result.Description" class="form-label">Описание*</label>
+            <textarea asp-for="Result.Description" class="form-control" rows="5"></textarea>
+            <span asp-validation-for="Result.Description" class="text-danger"></span>
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="ImageFile" class="form-label">Изображение (необязательно)</label>
-            <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" />
+            <label asp-for="Result.ImageUrl" class="form-label">Ссылка на изображение</label>
+            <input asp-for="Result.ImageUrl" class="form-control" type="url"
+                   placeholder="https://example.com/image.jpg" />
+            <small class="text-muted">Необязательное поле</small>
         </div>
 
         <button type="submit" class="btn btn-primary">Сохранить</button>
-        <a asp-page="./Index" asp-route-quizId="@Model.Result.QuizId" class="btn btn-secondary">Отмена</a>
+        <a asp-page="./Index" asp-route-quizId="@Model.Quiz.Id" class="btn btn-secondary">Отмена</a>
     </form>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+    <partial name="_ValidationScriptsPartial" />
+} 

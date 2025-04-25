@@ -5,11 +5,14 @@ using webb_tst_site3.Models;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
+using webb_tst_site3.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Конфигурация сервисов
+// Добавьте сервисы в контейнер.
 builder.Services.AddRazorPages();
+
 
 // Настройка БД
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -22,19 +25,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Admin/Login";
+        options.LogoutPath = "/Admin/Logout";
         options.AccessDeniedPath = "/Error";
-        options.Cookie.HttpOnly = true;
-        options.ExpireTimeSpan = TimeSpan.FromHours(2);
     });
 
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
 });
-
-builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddAntiforgery();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 
@@ -56,6 +55,7 @@ using (var scope = app.Services.CreateScope())
         await db.SaveChangesAsync();
     }
 }*/
+app.UseAuthentication();
 
 // Middleware pipeline
 if (!app.Environment.IsDevelopment())

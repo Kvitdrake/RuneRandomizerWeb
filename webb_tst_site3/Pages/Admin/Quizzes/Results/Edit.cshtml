@@ -1,5 +1,5 @@
 ﻿@page "{id:int}"
-@model webb_tst_site3.Pages.Admin.Quizzes.Results.EditModel
+@model EditModel
 @{
     ViewData["Title"] = "Редактирование результата";
 }
@@ -9,43 +9,24 @@
     <h4>Квиз: @Model.Quiz.Title</h4>
     <hr />
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post">
         <input type="hidden" asp-for="Result.Id" />
         <input type="hidden" asp-for="Result.QuizId" />
-        <input type="hidden" asp-for="Result.ImageUrl" />
 
         <div class="form-group mb-3">
-            <label asp-for="Result.Name" class="form-label">Название</label>
+            <label asp-for="Result.Name" class="form-label">Название*</label>
             <input asp-for="Result.Name" class="form-control" required />
             <span asp-validation-for="Result.Name" class="text-danger"></span>
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Result.Description" class="form-label">Описание</label>
+            <label asp-for="Result.Description" class="form-label">Описание*</label>
             <textarea asp-for="Result.Description" class="form-control" rows="5" required></textarea>
         </div>
 
         <div class="form-group mb-3">
-            <label class="form-label">Текущее изображение</label>
-            @if (!string.IsNullOrEmpty(Model.Result.ImageUrl))
-            {
-                <div>
-                    <img src="@Model.Result.ImageUrl" style="max-height: 150px;" class="img-thumbnail mb-2" />
-                    <div class="form-check">
-                        <input asp-for="DeleteImage" class="form-check-input" />
-                        <label asp-for="DeleteImage" class="form-check-label">Удалить изображение</label>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <p class="text-muted">Нет изображения</p>
-            }
-        </div>
-
-        <div class="form-group mb-3">
-            <label asp-for="ImageFile" class="form-label">Новое изображение</label>
-            <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" />
+            <label asp-for="Result.ImageUrl" class="form-label">Ссылка на изображение</label>
+            <input asp-for="Result.ImageUrl" class="form-control" type="url" placeholder="https://example.com/image.jpg" />
         </div>
 
         <div class="form-group">
@@ -58,13 +39,3 @@
         </div>
     </form>
 </div>
-
-@section Styles {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-}
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

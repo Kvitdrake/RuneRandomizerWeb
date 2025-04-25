@@ -45,6 +45,9 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Questions.Answers
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("Answer.Result");
+            ModelState.Remove("Answer.Question");
+
             if (!ModelState.IsValid)
             {
                 var answer = await _context.Answers

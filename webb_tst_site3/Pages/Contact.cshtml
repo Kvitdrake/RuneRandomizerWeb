@@ -1,0 +1,24 @@
+﻿@page
+@model ContactModel
+@{
+    ViewData["Title"] = "Связь с разработчиком";
+}
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Feedback.Name"></label>
+        <input asp-for="Feedback.Name" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Feedback.Email"></label>
+        <input asp-for="Feedback.Email" type="email" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Feedback.Message"></label>
+        <textarea asp-for="Feedback.Message" class="form-control" rows="5" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Отправить</button>
+</form>

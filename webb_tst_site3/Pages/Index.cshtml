@@ -1,11 +1,11 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Генератор рун";
+    ViewData["Title"] = "Fiend Magic";
 }
 
 <div class="container text-center mt-5">
-    <h1 class="display-4 mb-4">Добро пожаловать в генератор рун</h1>
+    <h1 class="display-4 mb-4">Добро пожаловать в Fiend Magic</h1>
 
     <div class="card shadow-sm mx-auto" style="max-width: 600px;">
         <div class="card-body">
@@ -23,23 +23,20 @@
             }
             else if (User.IsInRole("Admin"))
             {
-                <div class="alert alert-info">
-                    <i class="fas fa-user-shield me-2"></i>Вы вошли как администратор
-                </div>
-                <div class="d-grid gap-3">
+                <div class="d-grid">
                     <a href="/Admin" class="btn btn-primary btn-lg py-3">
                         <i class="fas fa-tachometer-alt me-2"></i>Панель управления
-                    </a>
-                    <a href="/Randomizer" class="btn btn-outline-primary btn-lg py-3">
-                        <i class="fas fa-random me-2"></i>Генератор рун
                     </a>
                 </div>
             }
             else
             {
-                <div class="d-grid">
-                    <a href="/Randomizer" class="btn btn-primary btn-lg py-3">
-                        <i class="fas fa-random me-2"></i>Перейти к генератору
+                <div class="list-group">
+                    <a href="/Randomizer" class="list-group-item list-group-item-action">
+                        <i class="fas fa-random me-2"></i>Задать вопрос рунам
+                    </a>
+                    <a href="/Quiz" class="list-group-item list-group-item-action">
+                        <i class="fas fa-question-circle me-2"></i>Пройти квизы
                     </a>
                 </div>
             }

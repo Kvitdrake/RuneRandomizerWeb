@@ -1,30 +1,99 @@
-﻿@page "{questionId:int}"
+﻿@page
 @model webb_tst_site3.Pages.Admin.Quizzes.Questions.Answers.IndexModel
 @{
-    ViewData["Title"] = "Ответы на вопрос";
+    ViewData["Title"] = Model.QuestionId.HasValue
+        ? $"Ответы на вопрос"
+        : $"Все ответы квиза";
 }
 
 <div class="container">
-    <h2>@ViewData["Title"]</h2>
-    <p class="lead">Вопрос: @Model.Question.Text</p>
-
-    <div class="mb-3">
-        <a asp-page="./Create" asp-route-questionId="@Model.Question.Id"
-           class="btn btn-primary">
-            Добавить ответ
-        </a>
-        <a asp-page="../Index" asp-route-quizId="@Model.Question.QuizId"
-           class="btn btn-secondary">
-            ← Назад к вопросам
-        </a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@ViewData["Title"]: @Model.Quiz.Title</h2>
+        @if (Model.QuestionId.HasValue)
+        {
+            <a asp-page="../Index" asp-route-quizId="@Model.QuizId" class="btn btn-secondary">
+                ← Назад к вопросам
+            </a>
+        }
+        else
+        {
+            <a asp-page="../Index" asp-route-quizId="@Model.QuizId" class="btn btn-secondary">
+                ← Назад к квизу
+            </a>
+        }
     </div>
 
-    <table class="table">
-        <thead>
+    @if (Model.QuestionId.HasValue)
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Вопрос: @Model.Question.Text</h5>
+            </div>
+        </div>
+    }
+
+    <!-- Форма поиска и сортировки -->
+    <form method="get" class="mb-4">
+        <input type="hidden" name="quizId" value="@Model.QuizId" />
+        @if (Model.QuestionId.HasValue)
+        {
+            <input type="hidden" name="questionId" value="@Model.QuestionId" />
+        }
+
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <input type="text" name="SearchText" class="form-control"
+                       placeholder="Поиск по ответам..." value="@Model.SearchText" />
+            </div>
+            <div class="col-md-3 mb-2">
+                <select name="SortField" class="form-control">
+                    <option value="QuestionOrder" selected="@(Model.SortField == "QuestionOrder")">По вопросу</option>
+                    <option value="Text" selected="@(Model.SortField == "Text")">По тексту ответа</option>
+                    <option value="Score" selected="@(Model.SortField == "Score")">По баллам</option>
+                    <option value="Result" selected="@(Model.SortField == "Result")">По результату</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-2">
+                <select name="SortDirection" class="form-control">
+                    <option value="asc" selected="@(Model.SortDirection == "asc")">По возрастанию</option>
+                    <option value="desc" selected="@(Model.SortDirection == "desc")">По убыванию</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-2">
+                <button type="submit" class="btn btn-primary w-100">Применить</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Кнопка добавления -->
+    <div class="mb-3">
+        @if (Model.QuestionId.HasValue)
+        {
+            <a asp-page="./Create" asp-route-quizId="@Model.QuizId" asp-route-questionId="@Model.QuestionId"
+               class="btn btn-success">
+                Добавить ответ
+            </a>
+        }
+        else
+        {
+            <a asp-page="./Create" asp-route-quizId="@Model.QuizId"
+               class="btn btn-success">
+                Добавить ответ
+            </a>
+        }
+    </div>
+
+    <!-- Таблица ответов -->
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
             <tr>
                 <th>Ответ</th>
                 <th>Баллы</th>
                 <th>Результат</th>
+                @if (!Model.QuestionId.HasValue)
+                {
+                    <th>Вопрос</th>
+                }
                 <th>Действия</th>
             </tr>
         </thead>
@@ -34,13 +103,80 @@
                 <tr>
                     <td>@answer.Text</td>
                     <td>@answer.Score</td>
-                    <td>@answer.Result?.Name</td>
+                    <td>@answer.ResultName</td>
+                    @if (!Model.QuestionId.HasValue)
+                    {
+                        <td>
+                            <a asp-page="../Questions/Answers/Index" asp-route-quizId="@Model.QuizId"
+                               asp-route-questionId="@answer.QuestionId">
+                                @answer.QuestionText
+                            </a>
+                        </td>
+                    }
                     <td>
-                        <a asp-page="./Edit" asp-route-id="@answer.Id" class="btn btn-sm btn-warning">Ред.</a>
-                        <a asp-page="./Delete" asp-route-id="@answer.Id" class="btn btn-sm btn-danger">Удл.</a>
+                        <div class="btn-group btn-group-sm">
+                            <a asp-page="./Edit" asp-route-id="@answer.Id"
+                               class="btn btn-warning">Редактировать</a>
+                            <a asp-page="./Delete" asp-route-id="@answer.Id"
+                               class="btn btn-danger">Удалить</a>
+                        </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+
+    <!-- Пагинация -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @if (Model.Answers.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="@Url.Page("", new {
+                           quizId = Model.QuizId,
+                           questionId = Model.QuestionId,
+                           pageIndex = Model.Answers.PageIndex - 1,
+                           searchText = Model.SearchText,
+                           sortField = Model.SortField,
+                           sortDirection = Model.SortDirection
+                       })">
+                        Назад
+                    </a>
+                </li>
+            }
+            @for (var i = 1; i <= Model.Answers.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Answers.PageIndex ? "active" : "")">
+                    <a class="page-link"
+                       href="@Url.Page("", new {
+                           quizId = Model.QuizId,
+                           questionId = Model.QuestionId,
+                           pageIndex = i,
+                           searchText = Model.SearchText,
+                           sortField = Model.SortField,
+                           sortDirection = Model.SortDirection
+                       })">
+                        @i
+                    </a>
+                </li>
+            }
+            @if (Model.Answers.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="@Url.Page("", new {
+                           quizId = Model.QuizId,
+                           questionId = Model.QuestionId,
+                           pageIndex = Model.Answers.PageIndex + 1,
+                           searchText = Model.SearchText,
+                           sortField = Model.SortField,
+                           sortDirection = Model.SortDirection
+                       })">
+                        Вперед
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
 </div>
