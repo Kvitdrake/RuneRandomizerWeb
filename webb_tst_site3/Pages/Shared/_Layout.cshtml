@@ -3,32 +3,57 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fiend Magic - @ViewData["Title"]</title>
+    <title>@(ViewData["SiteName"] ?? "Fiend Magic") - @ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        :root {
+            --primary-color: @ViewData["PrimaryColor"];
+            --secondary-color: @ViewData["SecondaryColor"];
+            --background-color: @ViewData["BackgroundColor"];
+            --text-color: @ViewData["TextColor"];
+        }
+    </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-dark mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Fiend Magic</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-area="" asp-page="@(User.IsInRole("Admin") ? "/Admin/Index" : "/Home")">
+                    @if (!string.IsNullOrEmpty(ViewData["LogoUrl"] as string))
+                    {
+                        <img src="@ViewData["LogoUrl"]" alt="@(ViewData["SiteName"] ?? "Fiend Magic")" height="40" class="me-2">
+                    }
+                    @(ViewData["SiteName"] ?? "Fiend Magic")
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Index">Главная</a>
+                            <a class="nav-link" asp-area="" asp-page="@(User.IsInRole("Admin") ? "/Admin/Index" : "/Home")">
+                                <i class="fas fa-home"></i> Главная
+                            </a>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/Randomizer">Генератор рун</a>
+                                <a class="nav-link" asp-page="/Randomizer">
+                                    <i class="fas fa-random"></i> Генератор рун
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/Quiz">Квизы</a>
+                                <a class="nav-link" asp-page="/Quiz">
+                                    <i class="fas fa-question-circle"></i> Квизы
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Articles">
+                                    <i class="fas fa-newspaper"></i> Статьи
+                                </a>
                             </li>
                         }
                     </ul>
@@ -37,24 +62,23 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container flex-grow-1">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; @DateTime.Now.Year - Fiend Magic
+    <footer class="footer mt-auto py-3">
+        <div class="container text-center">
+            &copy; @DateTime.Now.Year - @(ViewData["SiteName"] ?? "Fiend Magic")
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
 </body>
 </html>

@@ -1,0 +1,53 @@
+﻿@page
+@using webb_tst_site3.Pages
+@model HomeModel
+@{
+    ViewData["Title"] = ViewData["SiteName"] ?? "Fiend Magic";
+}
+
+<div class="container">
+    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
+
+    <div class="row">
+        @if (!string.IsNullOrEmpty(Model.MainContent))
+        {
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        @Html.Raw(Model.MainContent)
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.ShowRandomizer)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h3>Генератор рун</h3>
+                        <p>Задайте вопрос и получите ответ от рун</p>
+                        <a asp-page="/Randomizer" class="btn btn-primary mt-2">
+                            <i class="fas fa-random me-2"></i>Перейти
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.ShowQuizzes)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h3>Квизы и тесты</h3>
+                        <p>Пройдите наши тесты и узнайте больше о себе</p>
+                        <a asp-page="/Quiz" class="btn btn-primary mt-2">
+                            <i class="fas fa-question-circle me-2"></i>Перейти
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

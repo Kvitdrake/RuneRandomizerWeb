@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
+п»їusing Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -25,10 +25,10 @@ namespace webb_tst_site3.Pages.Admin
 
         public class InputModel
         {
-            [Required(ErrorMessage = "Требуется имя пользователя")]
+            [Required(ErrorMessage = "РўСЂРµР±СѓРµС‚СЃСЏ РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ")]
             public string Username { get; set; }
 
-            [Required(ErrorMessage = "Требуется пароль")]
+            [Required(ErrorMessage = "РўСЂРµР±СѓРµС‚СЃСЏ РїР°СЂРѕР»СЊ")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
         }
@@ -40,10 +40,12 @@ namespace webb_tst_site3.Pages.Admin
                 return Page();
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == Input.Username);
-            if (user == null || user.PasswordHash != HashPassword(Input.Password))
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == Input.Username);
+
+            if (user == null || !VerifyPassword(Input.Password, user.PasswordHash))
             {
-                ModelState.AddModelError(string.Empty, "Неверные учетные данные");
+                ModelState.AddModelError(string.Empty, "РќРµРІРµСЂРЅС‹Рµ СѓС‡РµС‚РЅС‹Рµ РґР°РЅРЅС‹Рµ");
                 return Page();
             }
 
@@ -68,7 +70,15 @@ namespace webb_tst_site3.Pages.Admin
             return RedirectToPage("/Admin/Index");
         }
 
-        private string HashPassword(string password)
+        private bool VerifyPassword(string password, string storedHash)
+        {
+            using var sha256 = SHA256.Create();
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            var computedHash = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+            return computedHash == storedHash;
+        }
+
+        public static string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
             var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));

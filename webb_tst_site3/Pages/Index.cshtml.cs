@@ -12,9 +12,20 @@ namespace webb_tst_site3.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-
+            if (User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin"))
+                {
+                    return RedirectToPage("/Admin/Index");
+                }
+                else
+                {
+                    return RedirectToPage("/Home");
+                }
+            }
+            return Page();
         }
     }
 }

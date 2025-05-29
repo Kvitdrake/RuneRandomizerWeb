@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using webb_tst_site3.Data;
 using Microsoft.EntityFrameworkCore;
+using webb_tst_site3.Data;
 using webb_tst_site3.Models;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace webb_tst_site3.Pages.Admin.Quizzes.Questions
 {
@@ -14,17 +17,27 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Questions
             _context = context;
         }
 
+        [BindProperty(SupportsGet = true)]
+        public int QuizId { get; set; }
+
         public Models.Quiz Quiz { get; set; }
         public IList<Question> Questions { get; set; }
 
-        public async Task OnGetAsync(int quizId)
+        public async Task<IActionResult> OnGetAsync()
         {
-            Quiz = await _context.Quizzes.FindAsync(quizId);
-            Questions = await _context.Questions
-                .Include(q => q.Answers)
-                .ThenInclude(a => a.Result)
-                .Where(q => q.QuizId == quizId)
-                .ToListAsync();
+            // Загружаем квиз с вопросами
+            Quiz = await _context.Quizzes
+                .Include(q => q.Questions)
+                .ThenInclude(q => q.Answers)
+                .FirstOrDefaultAsync(q => q.Id == QuizId);
+
+            if (Quiz == null)
+            {
+                return NotFound();
+            }
+
+            Questions = Quiz.Questions.OrderBy(q => q.Order).ToList();
+            return Page();
         }
     }
 }

@@ -1,0 +1,364 @@
+﻿# Документация к базе данных Rune Randomizer
+
+## Обзор базы данных
+
+База данных Rune Randomizer предназначена для системы работы с рунами, квизами и пользователями. Она включает следующие основные компоненты:
+- Управление пользователями и ролями
+- Хранение информации о рунах и сферах
+- Система квизов с вопросами и ответами
+- Гибкая система настроек сайта
+
+## Схема базы данных
+
+![Диаграмма базы данных](https://i.imgur.com/ERD9x7L.png)
+
+## Подробное описание таблиц
+
+### 1. Пользователи (Users)
+
+```sql
+CREATE TABLE Users (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Username VARCHAR(50) NOT NULL UNIQUE,
+    PasswordHash VARCHAR(255) NOT NULL,
+    Role ENUM('User', 'Admin') NOT NULL DEFAULT 'User',
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Назначение**: Хранение учетных записей пользователей.
+
+**Поля**:
+- `Id` - уникальный идентификатор пользователя
+- `Username` - уникальное имя пользователя
+- `PasswordHash` - хэш пароля (рекомендуется использовать bcrypt)
+- `Role` - роль пользователя (обычный пользователь или администратор)
+- `CreatedAt` - дата и время создания учетной записи
+
+**Индексы**:
+- Первичный ключ по `Id`
+- Уникальный индекс по `Username`
+
+### 2. Сферы (Spheres)
+
+```sql
+CREATE TABLE Spheres (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Description TEXT,
+    ImageUrl VARCHAR(255),
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt DATETIME ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+**Назначение**: Хранение различных сфер (категорий) для рун.
+
+**Поля**:
+- `Id` - уникальный идентификатор сферы
+- `Name` - название сферы
+- `Description` - описание сферы
+- `ImageUrl` - URL изображения сферы
+- `CreatedAt` - дата создания
+- `UpdatedAt` - дата последнего обновления
+
+### 3. Руны (Runes)
+
+```sql
+CREATE TABLE Runes (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    BaseDescription TEXT,
+    ImageUrl VARCHAR(255),
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt DATETIME ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+**Назначение**: Хранение информации о рунах.
+
+**Поля**:
+- `Id` - уникальный идентификатор руны
+- `Name` - название руны
+- `BaseDescription` - базовое описание руны
+- `ImageUrl` - URL изображения руны
+- `CreatedAt` - дата создания
+- `UpdatedAt` - дата последнего обновления
+
+### 4. Описания рун для сфер (RuneSphereDescriptions)
+
+```sql
+CREATE TABLE RuneSphereDescriptions (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    RuneId INT NOT NULL,
+    SphereId INT NOT NULL,
+    Description TEXT NOT NULL,
+    FOREIGN KEY (RuneId) REFERENCES Runes(Id) ON DELETE CASCADE,
+    FOREIGN KEY (SphereId) REFERENCES Spheres(Id) ON DELETE CASCADE,
+    UNIQUE KEY (RuneId, SphereId)
+);
+```
+
+**Назначение**: Связь между рунами и сферами с уникальными описаниями.
+
+**Поля**:
+- `Id` - уникальный идентификатор
+- `RuneId` - ссылка на руну
+- `SphereId` - ссылка на сферу
+- `Description` - описание руны в контексте сферы
+
+**Индексы**:
+- Первичный ключ по `Id`
+- Уникальный составной индекс по `RuneId` и `SphereId`
+- Внешние ключи на таблицы Runes и Spheres
+
+### 5. Квизы (Quizzes)
+
+```sql
+CREATE TABLE Quizzes (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(100) NOT NULL,
+    Description TEXT,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    IsPublished BOOLEAN NOT NULL DEFAULT TRUE
+);
+```
+
+**Назначение**: Хранение квизов (опросников).
+
+**Поля**:
+- `Id` - уникальный идентификатор квиза
+- `Title` - название квиза
+- `Description` - описание квиза
+- `CreatedAt` - дата создания
+- `UpdatedAt` - дата последнего обновления
+- `IsPublished` - флаг публикации (виден ли квиз пользователям)
+
+### 6. Вопросы (Questions)
+
+```sql
+CREATE TABLE Questions (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    QuizId INT NOT NULL,
+    Text TEXT NOT NULL,
+    `Order` INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (QuizId) REFERENCES Quizzes(Id) ON DELETE CASCADE
+);
+```
+
+**Назначение**: Вопросы в квизах.
+
+**Поля**:
+- `Id` - уникальный идентификатор вопроса
+- `QuizId` - ссылка на квиз
+- `Text` - текст вопроса
+- `Order` - порядковый номер вопроса в квизе
+
+**Индексы**:
+- Первичный ключ по `Id`
+- Внешний ключ на таблицу Quizzes
+
+### 7. Результаты (Results)
+
+```sql
+CREATE TABLE Results (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    QuizId INT NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    Description TEXT NOT NULL,
+    ImageUrl VARCHAR(255),
+    FOREIGN KEY (QuizId) REFERENCES Quizzes(Id) ON DELETE CASCADE
+);
+```
+
+**Назначение**: Возможные результаты квизов.
+
+**Поля**:
+- `Id` - уникальный идентификатор результата
+- `QuizId` - ссылка на квиз
+- `Name` - название результата
+- `Description` - описание результата
+- `ImageUrl` - URL изображения результата
+
+**Индексы**:
+- Первичный ключ по `Id`
+- Внешний ключ на таблицу Quizzes
+
+### 8. Ответы (Answers)
+
+```sql
+CREATE TABLE Answers (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    QuestionId INT NOT NULL,
+    Text TEXT NOT NULL,
+    ResultId INT NOT NULL,
+    Score INT DEFAULT 1,
+    FOREIGN KEY (QuestionId) REFERENCES Questions(Id) ON DELETE CASCADE,
+    FOREIGN KEY (ResultId) REFERENCES Results(Id) ON DELETE CASCADE
+);
+```
+
+**Назначение**: Варианты ответов на вопросы квиза.
+
+**Поля**:
+- `Id` - уникальный идентификатор ответа
+- `QuestionId` - ссылка на вопрос
+- `Text` - текст ответа
+- `ResultId` - к какому результату ведет этот ответ
+- `Score` - вес ответа (по умолчанию 1)
+
+**Индексы**:
+- Первичный ключ по `Id`
+- Внешние ключи на таблицы Questions и Results
+
+### 9. Группы настроек (SettingGroups)
+
+```sql
+CREATE TABLE SettingGroups (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Description TEXT,
+    `Order` INT DEFAULT 0,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Назначение**: Логическое группирование настроек.
+
+**Поля**:
+- `Id` - уникальный идентификатор группы
+- `Name` - название группы
+- `Description` - описание группы
+- `Order` - порядок сортировки
+- `CreatedAt` - дата создания
+
+### 10. Настройки сайта (SiteSettings)
+
+```sql
+CREATE TABLE SiteSettings (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    GroupId INT,
+    Name VARCHAR(100) NOT NULL UNIQUE,
+    DisplayName VARCHAR(100) NOT NULL,
+    Value TEXT,
+    DefaultValue TEXT,
+    DataType ENUM('string', 'number', 'boolean', 'color', 'image', 'text', 'html', 'json') NOT NULL,
+    Description TEXT,
+    IsPublic BOOLEAN DEFAULT TRUE,
+    Editable BOOLEAN DEFAULT TRUE,
+    `Order` INT DEFAULT 0,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (GroupId) REFERENCES SettingGroups(Id) ON DELETE SET NULL
+);
+```
+
+**Назначение**: Гибкая система настроек сайта.
+
+**Поля**:
+- `Id` - уникальный идентификатор настройки
+- `GroupId` - ссылка на группу настроек
+- `Name` - системное имя настройки (уникальное)
+- `DisplayName` - отображаемое имя настройки
+- `Value` - текущее значение
+- `DefaultValue` - значение по умолчанию
+- `DataType` - тип данных настройки
+- `Description` - описание настройки
+- `IsPublic` - доступна ли настройка на клиенте
+- `Editable` - можно ли редактировать
+- `Order` - порядок сортировки
+- `CreatedAt` - дата создания
+- `UpdatedAt` - дата последнего обновления
+
+**Индексы**:
+- Первичный ключ по `Id`
+- Уникальный индекс по `Name`
+- Внешний ключ на таблицу SettingGroups
+
+### 11. История изменений настроек (SettingHistory)
+
+```sql
+CREATE TABLE SettingHistory (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    SettingId INT NOT NULL,
+    OldValue TEXT,
+    NewValue TEXT,
+    ChangedBy INT NOT NULL,
+    ChangedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (SettingId) REFERENCES SiteSettings(Id) ON DELETE CASCADE,
+    FOREIGN KEY (ChangedBy) REFERENCES Users(Id) ON DELETE CASCADE
+);
+```
+
+**Назначение**: Аудит изменений настроек.
+
+**Поля**:
+- `Id` - уникальный идентификатор записи
+- `SettingId` - ссылка на настройку
+- `OldValue` - старое значение
+- `NewValue` - новое значение
+- `ChangedBy` - кто изменил (ссылка на пользователя)
+- `ChangedAt` - когда изменено
+
+**Индексы**:
+- Первичный ключ по `Id`
+- Внешние ключи на таблицы SiteSettings и Users
+
+## Примеры запросов
+
+### Получение всех рун с их описаниями для конкретной сферы
+
+```sql
+SELECT r.Name, r.BaseDescription, rs.Description AS SphereDescription
+FROM Runes r
+JOIN RuneSphereDescriptions rs ON r.Id = rs.RuneId
+JOIN Spheres s ON rs.SphereId = s.Id
+WHERE s.Id = 1;
+```
+
+### Получение квиза с вопросами и ответами
+
+```sql
+SELECT q.Title, q.Description, 
+       qu.Text AS Question, 
+       a.Text AS Answer, 
+       res.Name AS ResultName
+FROM Quizzes q
+JOIN Questions qu ON q.Id = qu.QuizId
+JOIN Answers a ON qu.Id = a.QuestionId
+JOIN Results res ON a.ResultId = res.Id
+WHERE q.Id = 1
+ORDER BY qu.`Order`, a.Id;
+```
+
+### Получение всех настроек для админ-панели
+
+```sql
+SELECT sg.Name AS GroupName, 
+       ss.Name, ss.DisplayName, ss.Value, 
+       ss.DataType, ss.Description
+FROM SiteSettings ss
+LEFT JOIN SettingGroups sg ON ss.GroupId = sg.Id
+WHERE ss.Editable = TRUE
+ORDER BY sg.`Order`, ss.`Order`;
+```
+
+## Рекомендации по использованию
+
+1. **Безопасность**:
+   - Всегда используйте параметризованные запросы для предотвращения SQL-инъекций
+   - Храните пароли только в хэшированном виде (рекомендуется bcrypt)
+   - Ограничивайте доступ к таблице Users и SettingHistory
+
+2. **Производительность**:
+   - Для часто запрашиваемых данных (настройки, руны) используйте кэширование
+   - Рассмотрите добавление индексов для часто используемых полей в WHERE-условиях
+
+3. **Расширение**:
+   - Для мультиязычности добавьте таблицы переводов
+   - Для аналитики можно добавить таблицы логов действий пользователей
+
+4. **Резервное копирование**:
+   - Регулярно создавайте бэкапы базы данных
+   - Особенно важны таблицы Users и SiteSettings

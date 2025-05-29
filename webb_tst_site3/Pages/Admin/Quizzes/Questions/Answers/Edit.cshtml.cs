@@ -20,6 +20,7 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Questions.Answers
         public Answer Answer { get; set; }
         public SelectList Results { get; set; }
         public int QuizId { get; set; }
+        public int QuestionId { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -34,6 +35,8 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Questions.Answers
             }
 
             QuizId = Answer.Question.QuizId;
+            QuestionId = Answer.QuestionId;
+
             Results = new SelectList(
                 await _context.Results
                     .Where(r => r.QuizId == QuizId)
@@ -42,20 +45,15 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Questions.Answers
 
             return Page();
         }
-
         public async Task<IActionResult> OnPostAsync()
         {
-            ModelState.Remove("Answer.Result");
-            ModelState.Remove("Answer.Question");
-
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid && Answer == null)
             {
-                var answer = await _context.Answers
+                // Перезагружаем данные для формы
+                QuizId = (await _context.Answers
                     .Include(a => a.Question)
-                    .ThenInclude(q => q.Quiz)
-                    .FirstOrDefaultAsync(a => a.Id == Answer.Id);
-
-                QuizId = answer?.Question?.QuizId ?? 0;
+                    .FirstOrDefaultAsync(a => a.Id == Answer.Id))?
+                    .Question?.QuizId ?? 0;
 
                 Results = new SelectList(
                     await _context.Results
@@ -67,24 +65,10 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Questions.Answers
             }
 
             _context.Attach(Answer).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AnswerExists(Answer.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("../Index", new { quizId = QuizId });
+            // Редирект на страницу ответов конкретного вопроса
+            return RedirectToPage("./Index", new { questionId = Answer.QuestionId });
         }
 
         private bool AnswerExists(int id)

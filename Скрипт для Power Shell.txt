@@ -1,0 +1,39 @@
+# Куда сохранять результат
+$outputFile = "combined_code.txt"
+
+# Очищаем файл, если он уже существует
+if (Test-Path $outputFile) { Clear-Content $outputFile }
+
+# Ищем все .cs, .js, .css файлы рекурсивно
+Get-ChildItem -Recurse -Include *.cs, *.cshtml | ForEach-Object {
+    # Пишем путь к файлу для удобства
+    "// Файл: $($_.FullName)" | Out-File -Append $outputFile -Encoding UTF8
+    
+    # Читаем содержимое, удаляем лишние переносы строк
+    $content = (Get-Content $_.FullName -Raw) -replace "(\r?\n){2,}", "`n`n"
+    
+    # Записываем обработанный текст
+    $content | Out-File -Append $outputFile -Encoding UTF8
+    
+    # Добавляем разделитель между файлами
+    "`n" | Out-File -Append $outputFile -Encoding UTF8
+}
+
+Write-Host "Готово! Все файлы объединены в $outputFile" -ForegroundColor Green
+
+# Путь к файлу (измени на свой)
+$inputFile = "combined_code.txt"
+$outputFile = "cleaned_code.txt"
+
+# Читаем файл целиком
+$content = Get-Content $inputFile -Raw
+
+# Заменяем:
+# - 3+ переноса строк → ровно 1 перенос
+# - 3+ пробела → ровно 1 пробел
+$cleanedContent = $content -replace "\r?\n", "" -replace " {3,}", " "
+
+# Сохраняем результат
+$cleanedContent | Out-File $outputFile -Encoding UTF8
+
+Write-Host "Готово! Очищенный файл: $outputFile" -ForegroundColor Green

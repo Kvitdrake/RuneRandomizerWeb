@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace webb_tst_site3.Models
 {
@@ -15,6 +16,9 @@ namespace webb_tst_site3.Models
 
         // Сделаем изображение необязательным
         public string? ImageUrl { get; set; }
+
+        [NotMapped]
+        public IFormFile ImageFile { get; set; }
 
         public int Order { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

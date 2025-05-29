@@ -32,10 +32,9 @@
                         </div>
 
                         <!-- Оставьте ImageUrl без изменений (уже необязательное) -->
-                        <div class="mb-3">
-                            <label asp-for="Rune.ImageUrl" class="form-label">Ссылка на изображение</label>
-                            <input asp-for="Rune.ImageUrl" class="form-control" placeholder="https://example.com/rune-image.jpg" />
-                            <small class="text-muted">Оставьте пустым для изображения по умолчанию</small>
+                        <div class="form-group">
+                            <label>Изображение</label>
+                            <input asp-for="Rune.ImageFile" type="file" class="form-control" />
                         </div>
                     </div>
                 </div>

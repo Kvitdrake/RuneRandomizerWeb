@@ -1,0 +1,43 @@
+﻿@page
+@model webb_tst_site3.Pages.Admin.Articles.IndexModel
+@{
+    ViewData["Title"] = "Статьи";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+        <a asp-page="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Добавить статью
+        </a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Ссылка</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var article in Model.Articles)
+            {
+                <tr>
+                    <td>@article.Title</td>
+                    <td>
+                        <a href="@article.Url" target="_blank">@article.Url</a>
+                    </td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@article.Id" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a asp-page="./Delete" asp-route-id="@article.Id" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

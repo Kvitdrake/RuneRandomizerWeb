@@ -1,0 +1,41 @@
+﻿@page
+@model webb_tst_site3.Pages.ArticlesModel
+@{
+    ViewData["Title"] = "Статьи";
+}
+
+<div class="container">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    <div class="row">
+        @foreach (var article in Model.Articles)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrEmpty(article.ImageUrl))
+                    {
+                        <img src="@article.ImageUrl" class="card-img-top" alt="@article.Title" style="height: 200px; object-fit: cover;">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@article.Title</h5>
+                        <p class="card-text">@article.Description</p>
+                        @if (!string.IsNullOrEmpty(article.Hashtags))
+                        {
+                            <div class="mb-2">
+                                @foreach (var tag in article.Hashtags.Split(' '))
+                                {
+                                    <span class="badge bg-secondary me-1">@tag</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a href="@article.Url" target="_blank" class="btn btn-primary w-100">
+                            <i class="fas fa-external-link-alt me-2"></i>Читать
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

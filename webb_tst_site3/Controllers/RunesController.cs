@@ -16,8 +16,7 @@ namespace webb_tst_site.Controllers
         {
             _context = context;
         }
-
-        [HttpGet("random")]
+        [HttpGet("runes/random")]
         public async Task<IActionResult> GetRandomRune([FromQuery] int? sphereId = null)
         {
             var query = _context.Runes
@@ -33,23 +32,17 @@ namespace webb_tst_site.Controllers
             var runes = await query.ToListAsync();
             if (!runes.Any()) return NotFound();
 
-            var rune = runes[_random.Next(runes.Count)];
-            var description = rune.BaseDescription;
-            var sphereName = "";
-
-            if (sphereId.HasValue)
-            {
-                var sphereDesc = rune.SphereDescriptions.FirstOrDefault(sd => sd.SphereId == sphereId.Value);
-                description = sphereDesc?.Description ?? description;
-                sphereName = sphereDesc?.Sphere?.Name ?? "";
-            }
+            var random = new Random();
+            var rune = runes[random.Next(runes.Count)];
 
             return Ok(new
             {
-                name = rune.Name,
-                imageUrl = string.IsNullOrEmpty(rune.ImageUrl) ? "/images/default-rune.png" : rune.ImageUrl,
-                description,
-                sphereName
+                rune.Id,
+                rune.Name,
+                rune.ImageUrl,
+                rune.BaseDescription,
+                SphereDescriptions = rune.SphereDescriptions
+                    .Select(sd => new { sd.SphereId, sd.Description })
             });
         }
 

@@ -1,5 +1,5 @@
-﻿// Models/Result.cs
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace webb_tst_site3.Models
 {
@@ -14,10 +14,10 @@ namespace webb_tst_site3.Models
         public string Description { get; set; }
 
         public string? ImageUrl { get; set; }
-
         public int QuizId { get; set; }
-
-        // Убираем Required для навигационного свойства
         public Quiz? Quiz { get; set; }
+
+        [NotMapped]
+        public IFormFile? ImageFile { get; set; }
     }
 }

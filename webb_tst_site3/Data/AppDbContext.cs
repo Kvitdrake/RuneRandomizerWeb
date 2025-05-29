@@ -19,6 +19,10 @@ namespace webb_tst_site3.Data
         public DbSet<Result> Results { get; set; }
         public DbSet<UserQuizAnswer> UserQuizAnswers { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
+        public DbSet<SettingGroup> SettingGroups { get; set; }
+        public DbSet<SiteSetting> SiteSettings { get; set; }
+        public DbSet<SettingHistory> SettingHistory { get; set; }
+        public DbSet<Article> Articles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -105,6 +109,31 @@ namespace webb_tst_site3.Data
                 entity.Property(r => r.ImageUrl).IsRequired(false);
                 entity.Navigation(r => r.Quiz).AutoInclude(false); // Отключаем автоматическую загрузку
             });
+
+            modelBuilder.Entity<Answer>()
+            .HasOne(a => a.Question)
+            .WithMany(q => q.Answers)
+            .HasForeignKey(a => a.QuestionId);
+
+            modelBuilder.Entity<Answer>()
+                .HasOne(a => a.Result)
+                .WithMany()
+                .HasForeignKey(a => a.ResultId);
+
+            modelBuilder.Entity<Article>()
+        .HasOne(a => a.Parent)
+        .WithMany(a => a.Children)
+        .HasForeignKey(a => a.ParentId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Article>()
+                .Property(a => a.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            modelBuilder.Entity<Article>()
+                .Property(a => a.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAddOrUpdate();
         }
     }
 }

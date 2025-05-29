@@ -29,8 +29,14 @@ namespace webb_tst_site3.Controllers
         [HttpGet("quizzes/{id}")]
         public async Task<IActionResult> GetQuiz(int id)
         {
-            var quiz = await _context.Quizzes.FindAsync(id);
+            var quiz = await _context.Quizzes
+                .Include(q => q.Questions)
+                    .ThenInclude(q => q.Answers)
+                .Include(q => q.Results)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
             if (quiz == null) return NotFound();
+
             return Ok(quiz);
         }
 

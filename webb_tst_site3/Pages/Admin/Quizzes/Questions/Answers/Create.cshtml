@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "{questionId:int}"
 @model webb_tst_site3.Pages.Admin.Quizzes.Questions.Answers.CreateModel
 @{
     ViewData["Title"] = "Добавить ответ";
@@ -6,55 +6,38 @@
 
 <div class="container">
     <h2>@ViewData["Title"]</h2>
-    <h4>Квиз: @Model.Quiz.Title</h4>
-    <hr />
+    <p>Для вопроса: @Model.Question.Text</p>
 
     <form method="post">
-        <input type="hidden" asp-for="QuizId" />
-
-        @if (Model.QuestionId.HasValue)
-        {
-            <input type="hidden" asp-for="Answer.QuestionId" />
-            <div class="form-group mb-3">
-                <label class="form-label">Вопрос:</label>
-                <input type="text" class="form-control"
-                       value="@(await Model._context.Questions.FindAsync(Model.QuestionId.Value))?.Text" readonly />
-            </div>
-        }
-        else
-        {
-            <div class="form-group mb-3">
-                <label asp-for="Answer.QuestionId" class="form-label">Вопрос*</label>
-                <select asp-for="Answer.QuestionId" class="form-control" asp-items="Model.Questions" required>
-                    <option value="">-- Выберите вопрос --</option>
-                </select>
-                <span asp-validation-for="Answer.QuestionId" class="text-danger"></span>
-            </div>
-        }
+        <input type="hidden" asp-for="Answer.QuestionId" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="form-group mb-3">
-            <label asp-for="Answer.Text" class="form-label">Текст ответа*</label>
+            <label asp-for="Answer.Text" class="form-label"></label>
             <input asp-for="Answer.Text" class="form-control" required />
             <span asp-validation-for="Answer.Text" class="text-danger"></span>
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Answer.Score" class="form-label">Баллы*</label>
-            <input asp-for="Answer.Score" class="form-control" type="number" min="1" required />
-            <span asp-validation-for="Answer.Score" class="text-danger"></span>
+            <label asp-for="Answer.Score" class="form-label"></label>
+            <input asp-for="Answer.Score" class="form-control" type="number" min="1" value="1" required />
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Answer.ResultId" class="form-label">Результат*</label>
-            <select asp-for="Answer.ResultId" class="form-control" asp-items="Model.Results" required>
+            <label asp-for="Answer.ResultId" class="form-label"></label>
+            <select asp-for="Answer.ResultId" class="form-control" required
+                    asp-items="Model.Results">
                 <option value="">-- Выберите результат --</option>
             </select>
             <span asp-validation-for="Answer.ResultId" class="text-danger"></span>
         </div>
 
         <button type="submit" class="btn btn-primary">Сохранить</button>
-        <a asp-page="./Index" asp-route-quizId="@Model.QuizId" asp-route-questionId="@Model.QuestionId"
-           class="btn btn-secondary">Отмена</a>
+        <a asp-page="./Index"
+           asp-route-questionId="@Model.Answer.QuestionId"
+           class="btn btn-secondary">
+            Отмена
+        </a>
     </form>
 </div>
 
