@@ -50,10 +50,10 @@ namespace webb_tst_site3.Pages.Admin
             }
 
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.Role, user.Role)
+    };
 
             var claimsIdentity = new ClaimsIdentity(
                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -67,7 +67,8 @@ namespace webb_tst_site3.Pages.Admin
                     ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2)
                 });
 
-            return RedirectToPage("/Admin/Index");
+            // Используем относительный путь для перехода на страницу Admin/Index
+            return RedirectToPage("Index");
         }
 
         private bool VerifyPassword(string password, string storedHash)
