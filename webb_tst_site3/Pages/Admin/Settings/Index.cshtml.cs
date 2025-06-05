@@ -58,7 +58,7 @@ namespace webb_tst_site3.Pages.Admin.Settings
                         SettingId = dbSetting.Id,
                         OldValue = dbSetting.Value,
                         NewValue = setting.Value.Value,
-                        ChangedByUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                        //ChangedByUserId = User.Identity
                     });
                 }
             }

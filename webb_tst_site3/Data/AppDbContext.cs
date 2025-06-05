@@ -26,7 +26,12 @@ namespace webb_tst_site3.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Настройка связей для RuneSphereDescription
+            // User
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
+            // RuneSphereDescription
             modelBuilder.Entity<RuneSphereDescription>()
                 .HasOne(rsd => rsd.Rune)
                 .WithMany(r => r.SphereDescriptions)
@@ -39,7 +44,11 @@ namespace webb_tst_site3.Data
                 .HasForeignKey(rsd => rsd.SphereId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Настройка связей для Quiz
+            modelBuilder.Entity<RuneSphereDescription>()
+                .HasIndex(rsd => new { rsd.RuneId, rsd.SphereId })
+                .IsUnique();
+
+            // Quiz
             modelBuilder.Entity<Quiz>()
                 .HasMany(q => q.Questions)
                 .WithOne(q => q.Quiz)
@@ -52,21 +61,21 @@ namespace webb_tst_site3.Data
                 .HasForeignKey(r => r.QuizId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Настройка связей для Question
+            // Question
             modelBuilder.Entity<Question>()
                 .HasMany(q => q.Answers)
                 .WithOne(a => a.Question)
                 .HasForeignKey(a => a.QuestionId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Настройка связей для Answer
+            // Answer
             modelBuilder.Entity<Answer>()
                 .HasOne(a => a.Result)
                 .WithMany()
                 .HasForeignKey(a => a.ResultId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Настройка связей для UserQuizAnswer
+            // UserQuizAnswer
             modelBuilder.Entity<UserQuizAnswer>()
                 .HasOne(uqa => uqa.Quiz)
                 .WithMany()
@@ -85,55 +94,26 @@ namespace webb_tst_site3.Data
                 .HasForeignKey(uqa => uqa.AnswerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Настройка необязательных полей
-            modelBuilder.Entity<Result>()
-                .Property(r => r.ImageUrl)
-                .IsRequired(false);
-
-            // Уникальные индексы для улучшения производительности
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Username)
-                .IsUnique();
-
-            modelBuilder.Entity<RuneSphereDescription>()
-                .HasIndex(rsd => new { rsd.RuneId, rsd.SphereId })
-                .IsUnique();
-
-            modelBuilder.Entity<Result>(entity =>
-            {
-                entity.HasOne(r => r.Quiz)
-                    .WithMany(q => q.Results)
-                    .HasForeignKey(r => r.QuizId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.Property(r => r.ImageUrl).IsRequired(false);
-                entity.Navigation(r => r.Quiz).AutoInclude(false); // Отключаем автоматическую загрузку
-            });
-
-            modelBuilder.Entity<Answer>()
-            .HasOne(a => a.Question)
-            .WithMany(q => q.Answers)
-            .HasForeignKey(a => a.QuestionId);
-
-            modelBuilder.Entity<Answer>()
-                .HasOne(a => a.Result)
+            // SettingHistory (если присутствует ChangedByUserId, возможно нужен User)
+            modelBuilder.Entity<SettingHistory>()
+                .HasOne<Models.User>()
                 .WithMany()
-                .HasForeignKey(a => a.ResultId);
+                .HasForeignKey(sh => sh.ChangedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<Article>()
-        .HasOne(a => a.Parent)
-        .WithMany(a => a.Children)
-        .HasForeignKey(a => a.ParentId)
-        .OnDelete(DeleteBehavior.Restrict);
-
+            // Article
             modelBuilder.Entity<Article>()
                 .Property(a => a.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
             modelBuilder.Entity<Article>()
                 .Property(a => a.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAddOrUpdate();
+
+            // Feedback
+            modelBuilder.Entity<Feedback>()
+                .Property(f => f.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿@page
-@using webb_tst_site3.Extensions
 @model webb_tst_site3.Pages.Admin.Runes.IndexModel
 @{
     ViewData["Title"] = "Список рун";
@@ -19,21 +18,17 @@
             <button id="saveOrderBtn" class="btn btn-success mb-3">
                 <i class="fas fa-save me-2"></i>Сохранить порядок
             </button>
-
             <div class="row" id="runesRow">
                 @foreach (var rune in Model.Runes)
                 {
                     <div class="col-md-4 mb-4 draggable-card" draggable="true" data-rune-id="@rune.Id">
                         <div class="card shadow-sm h-100">
                             <div class="card-img-top text-center p-3 bg-light">
-                                <img src="@(rune.ImageUrl ?? "/images/default-rune.png")"
-                                     class="img-fluid" style="max-height: 120px;"
-                                     onerror="this.onerror=null;this.src='/images/default-rune.png'">
+                                <img src="@(rune.ImageUrl ?? "/images/default-rune.png")" class="img-fluid" style="max-height: 120px;" onerror="this.onerror=null;this.src='/images/default-rune.png'">
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">@rune.Name</h5>
-                                <p class="card-text text-muted small">@rune.BaseDescription.Truncate(100)</p>
-
+                                <p class="card-text text-muted small">@rune.BaseDescription?.Substring(0, Math.Min(rune.BaseDescription.Length, 100))</p>
                                 @if (rune.SphereDescriptions.Any())
                                 {
                                     <div class="mt-2">
@@ -43,7 +38,7 @@
                                             {
                                                 <li>
                                                     <span class="fw-bold">@desc.Sphere.Name:</span>
-                                                    <span>@desc.Description.Truncate(50)</span>
+                                                    <span>@desc.Description?.Substring(0, Math.Min(desc.Description.Length, 50))</span>
                                                 </li>
                                             }
                                         </ul>
@@ -51,12 +46,11 @@
                                 }
                             </div>
                             <div class="card-footer bg-white d-flex justify-content-between">
-                                <a asp-page="./Edit" asp-route-id="@rune.Id" class="btn btn-sm btn-outline-primary">
+                                <a asp-page="Edit" asp-route-id="@rune.Id" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit"></i> Изменить
                                 </a>
                                 <form method="post" asp-page-handler="Delete" asp-route-id="@rune.Id">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Удалить эту руну?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить эту руну?')">
                                         <i class="fas fa-trash"></i> Удалить
                                     </button>
                                 </form>
@@ -69,35 +63,9 @@
     }
     else
     {
-        <div class="alert alert-info">
-            Нет доступных рун. Создайте первую руну.
-        </div>
+        <div class="alert alert-info">Нет доступных рун. Создайте первую руну.</div>
     }
 </div>
-
-@section Styles {
-    <style>
-        .draggable-card {
-            cursor: grab;
-            transition: transform 0.2s;
-        }
-
-            .draggable-card:active {
-                cursor: grabbing;
-                transform: scale(1.02);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            }
-
-            .draggable-card.ghost {
-                opacity: 0.5;
-                border: 2px dashed #6c5ce7;
-            }
-
-        #saveOrderBtn {
-            display: none;
-        }
-    </style>
-}
 
 @section Scripts {
     <script>
@@ -106,13 +74,18 @@
             let draggedCard = null;
             let originalOrder = [];
 
-            // Инициализация оригинального порядка
+            function arraysEqual(a, b) {
+                return Array.isArray(a) &&
+                    Array.isArray(b) &&
+                    a.length === b.length &&
+                    a.every((val, index) => val === b[index]);
+            }
+
             function initializeOriginalOrder() {
                 originalOrder = Array.from(row.children).map(card => parseInt(card.dataset.runeId));
             }
             initializeOriginalOrder();
 
-            // Обработчики для drag-and-drop
             row.addEventListener('dragstart', e => {
                 if (e.target.classList.contains('draggable-card')) {
                     draggedCard = e.target;
@@ -143,49 +116,11 @@
                 }
             });
 
-            // Проверка изменений порядка
-            function checkOrderChanged() {
-                const currentOrder = Array.from(row.children).map(card => parseInt(card.dataset.runeId));
-                const isChanged = !arraysEqual(originalOrder, currentOrder);
-                document.getElementById('saveOrderBtn').style.display = isChanged ? 'block' : 'none';
-            }
-
-            // Сохранение порядка
-            document.getElementById('saveOrderBtn').addEventListener('click', async () => {
-                const runeIds = Array.from(row.children).map(card => parseInt(card.dataset.runeId));
-
-                try {
-                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-                    const response = await fetch('/api/runes/order', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'RequestVerificationToken': token
-                        },
-                        body: JSON.stringify(runeIds)
-                    });
-
-                    if (response.ok) {
-                        alert('Порядок успешно сохранен!');
-                        initializeOriginalOrder();
-                        document.getElementById('saveOrderBtn').style.display = 'none';
-                    } else {
-                        alert('Ошибка при сохранении порядка');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Произошла ошибка');
-                }
-            });
-
-            // Вспомогательные функции
             function getDragAfterElement(container, y) {
-                const cards = [...container.querySelectorAll('.draggable-card:not(.ghost)')];
-
-                return cards.reduce((closest, child) => {
+                const draggableElements = [...container.querySelectorAll('.draggable-card:not(.ghost)')];
+                return draggableElements.reduce((closest, child) => {
                     const box = child.getBoundingClientRect();
                     const offset = y - box.top - box.height / 2;
-
                     if (offset < 0 && offset > closest.offset) {
                         return { offset: offset, element: child };
                     } else {
@@ -194,13 +129,28 @@
                 }, { offset: Number.NEGATIVE_INFINITY }).element;
             }
 
-            function arraysEqual(a, b) {
-                if (a.length !== b.length) return false;
-                for (let i = 0; i < a.length; i++) {
-                    if (a[i] !== b[i]) return false;
-                }
-                return true;
+            function checkOrderChanged() {
+                const currentOrder = Array.from(row.children).map(card => parseInt(card.dataset.runeId));
+                const isChanged = !arraysEqual(originalOrder, currentOrder);
+                document.getElementById('saveOrderBtn').style.display = isChanged ? 'block' : 'none';
             }
+
+            document.getElementById('saveOrderBtn').addEventListener('click', async () => {
+                const runeIds = Array.from(row.children).map(card => parseInt(card.dataset.runeId));
+                try {
+                    const response = await fetch('/api/runes/order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(runeIds)
+                    });
+                    if (response.ok) {
+                        initializeOriginalOrder();
+                        document.getElementById('saveOrderBtn').style.display = 'none';
+                    }
+                } catch (err) {
+                    alert('Ошибка при сохранении порядка');
+                }
+            });
         });
     </script>
 }

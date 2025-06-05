@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using webb_tst_site3.Data;
 using webb_tst_site3.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace webb_tst_site3.Pages.Admin.Runes
 {

@@ -6,7 +6,6 @@
 
 <div class="container mt-4">
     <h1>@ViewData["Title"]</h1>
-
     <form method="post">
         <input type="hidden" asp-for="Rune.Id" />
 
@@ -29,17 +28,12 @@
         </div>
 
         <h4 class="mt-4">Описания для сфер:</h4>
-
         @foreach (var sphere in Model.AllSpheres)
         {
             <div class="card mb-3">
-                <div class="card-header">
-                    @sphere.Name
-                </div>
+                <div class="card-header">@sphere.Name</div>
                 <div class="card-body">
-                    <textarea name="SphereDescriptions[@sphere.Id]"
-                              class="form-control"
-                              rows="2">@Model.GetSphereDescription(sphere.Id)</textarea>
+                    <textarea name="SphereDescriptions[@sphere.Id]" class="form-control" rows="2">@Model.GetSphereDescription(sphere.Id)</textarea>
                 </div>
             </div>
         }

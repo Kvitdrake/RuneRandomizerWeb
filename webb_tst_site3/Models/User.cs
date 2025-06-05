@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace webb_tst_site3.Models
 {
@@ -14,8 +15,6 @@ namespace webb_tst_site3.Models
         public string PasswordHash { get; set; }
 
         [Required]
-        public string Role { get; set; } = "User";
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string Role { get; set; } // "Admin" или "User"
     }
 }

@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
-using webb_tst_site3.Data;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
+using webb_tst_site3.Data;
+using webb_tst_site3.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace webb_tst_site3.Pages.Admin
 {
@@ -21,69 +21,53 @@ namespace webb_tst_site3.Pages.Admin
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public string Username { get; set; }
+        [BindProperty]
+        public string Password { get; set; }
+        public string ErrorMessage { get; set; }
 
-        public class InputModel
+        public void OnGet()
         {
-            [Required(ErrorMessage = "Требуется имя пользователя")]
-            public string Username { get; set; }
-
-            [Required(ErrorMessage = "Требуется пароль")]
-            [DataType(DataType.Password)]
-            public string Password { get; set; }
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
+                ErrorMessage = "Заполните все поля";
                 return Page();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == Input.Username);
+            // Найти пользователя по имени
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == Username);
 
-            if (user == null || !VerifyPassword(Input.Password, user.PasswordHash))
+            if (user == null || !VerifyPassword(webb_tst_site3.Extensions.StringExtensions.GetSHA256Hash(Password), user.PasswordHash) || user.Role != "Admin")
             {
-                ModelState.AddModelError(string.Empty, "Неверные учетные данные");
+                ErrorMessage = "Неверный логин/пароль или нет прав администратора";
                 return Page();
             }
 
-            var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, user.Username),
-        new Claim(ClaimTypes.Role, user.Role)
-    };
+            // Аутентификация через куки
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
 
-            var claimsIdentity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2)
-                });
-
-            // Используем относительный путь для перехода на страницу Admin/Index
-            return RedirectToPage("Index");
+            return RedirectToPage("/Admin/Index");
         }
 
-        private bool VerifyPassword(string password, string storedHash)
+        // Пример хэширования (замените на свой)
+        private bool VerifyPassword(string password, string passwordHash)
         {
-            using var sha256 = SHA256.Create();
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            var computedHash = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-            return computedHash == storedHash;
-        }
-
-        public static string HashPassword(string password)
-        {
-            using var sha256 = SHA256.Create();
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+            // Для теста: храните пароль в открытом виде!
+            // В проде: используйте BCrypt/SHA256 и т.п.
+            return password == passwordHash;
         }
     }
 }
