@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿﻿
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
@@ -34,25 +35,31 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="@(User.IsInRole("Admin") ? "/Admin/Index" : "/Home")">
+                            <a class="nav-link" asp-area="" asp-page="/Home">
                                 <i class="fas fa-home"></i> Главная
                             </a>
                         </li>
-                        @if (User.Identity.IsAuthenticated)
+                        <li class="nav-item">
+                            <a class="nav-link" asp-page="/Randomizer">
+                                <i class="fas fa-random"></i> Генератор рун
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-page="/Quiz">
+                                <i class="fas fa-question-circle"></i> Квизы
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-page="/Articles">
+                                <i class="fas fa-newspaper"></i> Статьи
+                            </a>
+                        </li>
+                        @* Админская панель только для админа *@
+                        @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-page="/Randomizer">
-                                    <i class="fas fa-random"></i> Генератор рун
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-page="/Quiz">
-                                    <i class="fas fa-question-circle"></i> Квизы
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-page="/Articles">
-                                    <i class="fas fa-newspaper"></i> Статьи
+                                <a class="nav-link" asp-page="/Admin/Index">
+                                    <i class="fas fa-cogs"></i> Панель управления
                                 </a>
                             </li>
                         }
@@ -62,23 +69,15 @@
             </div>
         </nav>
     </header>
-
-    <div class="container flex-grow-1">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="footer mt-auto py-3">
+    <main role="main" class="flex-shrink-0">
+        @RenderBody()
+    </main>
+    <footer class="footer mt-auto py-3 bg-light">
         <div class="container text-center">
-            &copy; @DateTime.Now.Year - @(ViewData["SiteName"] ?? "Fiend Magic")
+            <span class="text-muted">&copy; 2025 Fiend Magic</span>
         </div>
     </footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>

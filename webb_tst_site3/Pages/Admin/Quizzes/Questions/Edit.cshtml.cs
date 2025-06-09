@@ -32,10 +32,10 @@ namespace webb_tst_site3.Pages.Admin.Quizzes.Questions
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            /*if (!ModelState.IsValid)
             {
                 return Page();
-            }
+            }*/
 
             _context.Attach(Question).State = EntityState.Modified;
 

@@ -1,40 +1,39 @@
 ﻿@page
-@using webb_tst_site3.Pages
-@model HomeModel
+@model webb_tst_site3.Pages.HomeModel
 @{
-    ViewData["Title"] = ViewData["SiteName"] ?? "Fiend Magic";
+    ViewData["Title"] = "Главная";
 }
 
-<div class="container">
-    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
+<div class="container mt-4">
+    @if (!string.IsNullOrWhiteSpace(Model.MainContent))
+    {
+        <div class="alert alert-secondary mb-4">
+            @Html.Raw(Model.MainContent)
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.CustomBlock))
+    {
+        <div class="alert alert-info mb-4">
+            @Html.Raw(Model.CustomBlock)
+        </div>
+    }
 
     <div class="row">
-        @if (!string.IsNullOrEmpty(Model.MainContent))
-        {
-            <div class="col-md-12">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        @Html.Raw(Model.MainContent)
-                    </div>
-                </div>
-            </div>
-        }
-
         @if (Model.ShowRandomizer)
         {
             <div class="col-md-6 mb-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
                         <h3>Генератор рун</h3>
-                        <p>Задайте вопрос и получите ответ от рун</p>
-                        <a asp-page="/Randomizer" class="btn btn-primary mt-2">
+                        <p>Используйте генератор для случайного подбора рун</p>
+                        <a asp-page="/Randomizer" class="btn btn-success mt-2">
                             <i class="fas fa-random me-2"></i>Перейти
                         </a>
                     </div>
                 </div>
             </div>
         }
-
         @if (Model.ShowQuizzes)
         {
             <div class="col-md-6 mb-4">
@@ -44,6 +43,26 @@
                         <p>Пройдите наши тесты и узнайте больше о себе</p>
                         <a asp-page="/Quiz" class="btn btn-primary mt-2">
                             <i class="fas fa-question-circle me-2"></i>Перейти
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <h2 class="mt-5 mb-3">Последние статьи</h2>
+    <div class="row">
+        @foreach (var article in Model.Articles)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@article.Title</h5>
+                        <p class="card-text">@article.Description</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a href="@article.Url" target="_blank" class="btn btn-primary w-100">
+                            <i class="fas fa-external-link-alt me-2"></i>Читать
                         </a>
                     </div>
                 </div>

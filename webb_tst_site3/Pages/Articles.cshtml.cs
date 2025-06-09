@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using webb_tst_site3.Data;
-using Microsoft.EntityFrameworkCore;
 using webb_tst_site3.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace webb_tst_site3.Pages
 {
@@ -14,12 +17,12 @@ namespace webb_tst_site3.Pages
             _context = context;
         }
 
-        public IList<Article> Articles { get; set; }
+        public List<Article> Articles { get; set; }
 
         public async Task OnGetAsync()
         {
             Articles = await _context.Articles
-                .Where(a => a.ParentId == null)
+                .Where(a => a.IsPublished)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
         }

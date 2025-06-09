@@ -10,11 +10,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     )
 );
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 
-builder.Services.AddRazorPages();
+// Применяем к Razor Pages:
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
+});
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
-
 
 builder.Services.AddScoped<webb_tst_site3.Services.SettingsService>();
 

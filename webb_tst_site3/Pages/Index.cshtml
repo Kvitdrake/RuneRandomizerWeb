@@ -22,7 +22,7 @@
                     </a>
                 </div>
             }
-            else if (User.IsInRole("Admin"))
+            else @if (User.IsInRole("Admin"))
             {
                 <div class="d-grid">
                     <a href="/Admin/Index" class="btn btn-primary btn-lg py-3">

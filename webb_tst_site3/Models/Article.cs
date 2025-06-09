@@ -33,6 +33,9 @@ namespace webb_tst_site3.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+        // Новое свойство для публикации
+        public bool IsPublished { get; set; } = false;
+
         // Метод для получения списка хэштегов
         public List<string> GetHashtagsList()
         {

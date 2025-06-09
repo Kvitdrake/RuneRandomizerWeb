@@ -27,10 +27,10 @@ namespace webb_tst_site3.Pages.Admin.Quizzes
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            /*if (!ModelState.IsValid)
             {
                 return Page();
-            }
+            }*/
 
             if (Quiz.ImageFile != null && Quiz.ImageFile.Length > 0)
             {
