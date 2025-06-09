@@ -5,23 +5,36 @@
 }
 
 <div class="container mt-4">
-    <h1 class="mb-4">Статьи</h1>
-    <div class="row">
-        @foreach (var article in Model.Articles)
-        {
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">@article.Title</h5>
-                        <p class="card-text">@article.Description</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <a href="@article.Url" target="_blank" class="btn btn-primary w-100">
-                            <i class="fas fa-external-link-alt me-2"></i>Читать
-                        </a>
-                    </div>
-                </div>
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+    @foreach (var article in Model.Articles.Where(a => a.ParentId == null))
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h3>@article.Title</h3>
+                @if (!string.IsNullOrEmpty(article.ImageUrl))
+                {
+                    <img src="@article.ImageUrl" alt="@article.Title" class="img-fluid mb-2" style="max-height:150px;" />
+                }
+                <p>@article.Description</p>
+                <a href="@article.Url" target="_blank">Читать в Telegram/другом источнике</a>
+                @if (article.Children.Any())
+                {
+                    <ul>
+                        @foreach (var sub in article.Children)
+                        {
+                            <li>
+                                <b>@sub.Title</b>
+                                @if (!string.IsNullOrEmpty(sub.ImageUrl))
+                                {
+                                    <img src="@sub.ImageUrl" alt="@sub.Title" style="max-height:80px;" />
+                                }
+                                <div>@sub.Description</div>
+                                <a href="@sub.Url" target="_blank">Ссылка</a>
+                            </li>
+                        }
+                    </ul>
+                }
             </div>
-        }
-    </div>
+        </div>
+    }
 </div>

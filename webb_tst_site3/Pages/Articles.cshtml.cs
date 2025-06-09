@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using webb_tst_site3.Data;
 using webb_tst_site3.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using webb_tst_site3.Data;
 
 namespace webb_tst_site3.Pages
 {
@@ -23,6 +23,7 @@ namespace webb_tst_site3.Pages
         {
             Articles = await _context.Articles
                 .Where(a => a.IsPublished)
+                .Include(a => a.Children)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
         }

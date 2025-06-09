@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using webb_tst_site3.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using webb_tst_site3.Models;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System.Threading.Tasks;
+using System.Linq;
+using webb_tst_site3.Data;
 
 namespace webb_tst_site3.Pages.Admin.Articles
 {
@@ -15,21 +18,24 @@ namespace webb_tst_site3.Pages.Admin.Articles
         [BindProperty]
         public Article Article { get; set; }
 
+        public SelectList ParentArticles { get; set; }
+
         public CreateModel(AppDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
             _environment = environment;
         }
 
-        public IActionResult OnGet()
+        public void OnGet()
         {
-            return Page();
+            ParentArticles = new SelectList(_context.Articles.Where(a => a.ParentId == null).ToList(), "Id", "Title");
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
+                ParentArticles = new SelectList(_context.Articles.Where(a => a.ParentId == null).ToList(), "Id", "Title");
                 return Page();
             }
 
@@ -37,9 +43,7 @@ namespace webb_tst_site3.Pages.Admin.Articles
             {
                 var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads/articles");
                 if (!Directory.Exists(uploadsFolder))
-                {
                     Directory.CreateDirectory(uploadsFolder);
-                }
 
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Article.ImageFile.FileName);
                 var filePath = Path.Combine(uploadsFolder, fileName);
@@ -55,7 +59,7 @@ namespace webb_tst_site3.Pages.Admin.Articles
             _context.Articles.Add(Article);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("Index");
         }
     }
 }

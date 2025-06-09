@@ -203,4 +203,22 @@ DELETE FROM Users WHERE Username = 'admin';
 
 -- Добавляем администратора с правильным хешем пароля 'admin123'
 INSERT INTO Users (Username, PasswordHash, Role) 
-VALUES ('admin', 'f6c3b2a1cd5d1e9f5b8c7d6e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5', 'Admin');%
+VALUES ('admin', 'f6c3b2a1cd5d1e9f5b8c7d6e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5', 'Admin');
+ALTER TABLE Articles ADD COLUMN IsPublished BOOLEAN NOT NULL DEFAULT TRUE;
+
+-- Удаляем дублирующиеся Appearance группы
+DELETE FROM SettingGroups WHERE Name = 'Appearance' AND Id NOT IN (SELECT MIN(Id) FROM SettingGroups WHERE Name = 'Appearance');
+
+-- Удаляем старые настройки SiteSettings с Name='SiteName' и др. если дублируются
+DELETE FROM SiteSettings WHERE Name IN (
+    'SiteName', 'PrimaryColor', 'SecondaryColor', 'BackgroundColor', 'TextColor', 'LogoUrl', 'HomePageContent', 'ShowRandomizer', 'ShowQuizzes'
+) AND Id NOT IN (
+    SELECT MIN(Id) FROM SiteSettings WHERE Name IN (
+        'SiteName', 'PrimaryColor', 'SecondaryColor', 'BackgroundColor', 'TextColor', 'LogoUrl', 'HomePageContent', 'ShowRandomizer', 'ShowQuizzes'
+    ) GROUP BY Name
+);
+
+-- Исправляем UpdatedAt для статей (если нужно)
+ALTER TABLE Articles MODIFY COLUMN UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+ALTER TABLE Quizzes ADD COLUMN ImageUrl VARCHAR(255) NULL;
