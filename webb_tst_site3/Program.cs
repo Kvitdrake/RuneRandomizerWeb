@@ -15,6 +15,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 
+
+builder.Services.AddScoped<webb_tst_site3.Services.SettingsService>();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

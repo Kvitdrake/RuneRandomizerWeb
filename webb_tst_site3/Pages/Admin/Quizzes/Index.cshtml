@@ -12,46 +12,60 @@
             ← Назад в главное меню
         </a>
     </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Название</th>
-                <th>Статус</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var quiz in Model.Quizzes)
-            {
+
+    @if (Model.Quizzes.Any())
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@quiz.Title</td>
-                    <td>@(quiz.IsPublished ? "Опубликован" : "Черновик")</td>
-                    <td>
-                        <div class="btn-group" role="group">
-                            <a asp-page="/Admin/Quizzes/Results/Index"
-                               asp-route-quizId="@quiz.Id"
-                               class="btn btn-info btn-sm">
-                                <i class="fas fa-star"></i> Результаты
-                            </a>
-                            <a asp-page="/Admin/Quizzes/Questions/Index"
-                               asp-route-quizId="@quiz.Id"
-                               class="btn btn-secondary btn-sm">
-                                <i class="fas fa-question"></i> Вопросы
-                            </a>
-                            <a asp-page="/Admin/Quizzes/Edit"
-                               asp-route-id="@quiz.Id"
-                               class="btn btn-primary btn-sm">
-                                <i class="fas fa-edit"></i> Ред.
-                            </a>
-                            <a asp-page="/Admin/Quizzes/Delete"
-                               asp-route-id="@quiz.Id"
-                               class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash"></i> Удл.
-                            </a>
-                        </div>
-                    </td>
+                    <th>Название</th>
+                    <th>Изображение</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var quiz in Model.Quizzes)
+                {
+                    <tr>
+                        <td>@quiz.Title</td>
+                        <td>
+                            <img src="@(quiz.ImageUrl ?? "/images/default-quiz.png")"
+                                 style="max-height: 50px;"
+                                 onerror="this.onerror=null;this.src='/images/default-quiz.png'">
+                        </td>
+                        <td>@(quiz.IsPublished ? "Опубликован" : "Черновик")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-page="/Admin/Quizzes/Results/Index"
+                                   asp-route-quizId="@quiz.Id"
+                                   class="btn btn-info btn-sm">
+                                    <i class="fas fa-star"></i> Результаты
+                                </a>
+                                <a asp-page="/Admin/Quizzes/Questions/Index"
+                                   asp-route-quizId="@quiz.Id"
+                                   class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-question"></i> Вопросы
+                                </a>
+                                <a asp-page="/Admin/Quizzes/Edit"
+                                   asp-route-id="@quiz.Id"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i> Ред.
+                                </a>
+                                <a asp-page="/Admin/Quizzes/Delete"
+                                   asp-route-id="@quiz.Id"
+                                   class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Удл.
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">Нет доступных квизов. Создайте первый квиз.</div>
+    }
 </div>

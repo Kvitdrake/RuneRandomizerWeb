@@ -12,7 +12,7 @@
         </a>
     </div>
 
-    @if (Model.Runes.Any())
+    @if (Model.Runes != null && Model.Runes.Any()) 
     {
         <div class="mb-4">
             <button id="saveOrderBtn" class="btn btn-success mb-3">
@@ -28,8 +28,8 @@
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">@rune.Name</h5>
-                                <p class="card-text text-muted small">@rune.BaseDescription?.Substring(0, Math.Min(rune.BaseDescription.Length, 100))</p>
-                                @if (rune.SphereDescriptions.Any())
+                                <p class="card-text text-muted small">@(rune.BaseDescription?.Substring(0, Math.Min(rune.BaseDescription?.Length ?? 0, 100)))</p>
+                                @if (rune.SphereDescriptions?.Any() == true)
                                 {
                                     <div class="mt-2">
                                         <h6 class="text-primary small">Описания по сферам:</h6>
@@ -37,8 +37,8 @@
                                             @foreach (var desc in rune.SphereDescriptions)
                                             {
                                                 <li>
-                                                    <span class="fw-bold">@desc.Sphere.Name:</span>
-                                                    <span>@desc.Description?.Substring(0, Math.Min(desc.Description.Length, 50))</span>
+                                                    <span class="fw-bold">@desc.Sphere?.Name:</span>
+                                                    <span>@(desc.Description?.Substring(0, Math.Min(desc.Description?.Length ?? 0, 50)))</span>
                                                 </li>
                                             }
                                         </ul>
@@ -71,6 +71,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const row = document.getElementById('runesRow');
+            if (!row) return; // Добавляем проверку на существование элемента
+
             let draggedCard = null;
             let originalOrder = [];
 
@@ -132,25 +134,29 @@
             function checkOrderChanged() {
                 const currentOrder = Array.from(row.children).map(card => parseInt(card.dataset.runeId));
                 const isChanged = !arraysEqual(originalOrder, currentOrder);
-                document.getElementById('saveOrderBtn').style.display = isChanged ? 'block' : 'none';
+                const saveBtn = document.getElementById('saveOrderBtn');
+                if (saveBtn) saveBtn.style.display = isChanged ? 'block' : 'none';
             }
 
-            document.getElementById('saveOrderBtn').addEventListener('click', async () => {
-                const runeIds = Array.from(row.children).map(card => parseInt(card.dataset.runeId));
-                try {
-                    const response = await fetch('/api/runes/order', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(runeIds)
-                    });
-                    if (response.ok) {
-                        initializeOriginalOrder();
-                        document.getElementById('saveOrderBtn').style.display = 'none';
+            const saveOrderBtn = document.getElementById('saveOrderBtn');
+            if (saveOrderBtn) {
+                saveOrderBtn.addEventListener('click', async () => {
+                    const runeIds = Array.from(row.children).map(card => parseInt(card.dataset.runeId));
+                    try {
+                        const response = await fetch('/api/runes/order', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(runeIds)
+                        });
+                        if (response.ok) {
+                            initializeOriginalOrder();
+                            saveOrderBtn.style.display = 'none';
+                        }
+                    } catch (err) {
+                        alert('Ошибка при сохранении порядка');
                     }
-                } catch (err) {
-                    alert('Ошибка при сохранении порядка');
-                }
-            });
+                });
+            }
         });
     </script>
 }

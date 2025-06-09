@@ -7,20 +7,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace webb_tst_site3.Pages.Admin.Runes
 {
     public class EditModel : PageModel
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public EditModel(AppDbContext context)
+        public EditModel(AppDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         [BindProperty]
         public Rune Rune { get; set; }
+
+        [BindProperty]
+        public IFormFile ImageFile { get; set; }
 
         public List<Sphere> AllSpheres { get; set; }
 
@@ -46,12 +53,6 @@ namespace webb_tst_site3.Pages.Admin.Runes
         {
             AllSpheres = await _context.Spheres.ToListAsync();
 
-            if (!ModelState.IsValid)
-            {
-                // Если невалидно, показать ошибки
-                return Page();
-            }
-
             // Найти существующую руну в базе с описаниями по сферам
             var existingRune = await _context.Runes
                 .Include(r => r.SphereDescriptions)
@@ -63,8 +64,31 @@ namespace webb_tst_site3.Pages.Admin.Runes
             // Обновляем основные свойства
             existingRune.Name = Rune.Name;
             existingRune.BaseDescription = Rune.BaseDescription;
-            existingRune.ImageUrl = string.IsNullOrWhiteSpace(Rune.ImageUrl) ? "/images/default-rune.png" : Rune.ImageUrl;
             existingRune.UpdatedAt = DateTime.UtcNow;
+
+            // Обработка загрузки изображения
+            if (ImageFile != null && ImageFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ImageFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await ImageFile.CopyToAsync(fileStream);
+                }
+
+                existingRune.ImageUrl = "/uploads/" + uniqueFileName;
+            }
+            else if (string.IsNullOrWhiteSpace(Rune.ImageUrl))
+            {
+                existingRune.ImageUrl = "/images/default-rune.png";
+            }
 
             // Обновляем описания по сферам ИЗ Request.Form
             foreach (var sd in existingRune.SphereDescriptions)

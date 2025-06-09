@@ -6,8 +6,9 @@
 
 <div class="container mt-4">
     <h1>@ViewData["Title"]</h1>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="Rune.Id" />
+        <input type="hidden" asp-for="Rune.ImageUrl" />
 
         <div class="mb-3">
             <label asp-for="Rune.Name" class="form-label">Название *</label>
@@ -22,9 +23,16 @@
         </div>
 
         <div class="mb-3">
-            <label asp-for="Rune.ImageUrl" class="form-label">Ссылка на изображение</label>
-            <input asp-for="Rune.ImageUrl" class="form-control" />
-            <small class="text-muted">Оставьте пустым для изображения по умолчанию</small>
+            <label asp-for="ImageFile" class="form-label">Изображение</label>
+            <input type="file" asp-for="ImageFile" class="form-control" accept="image/*" />
+            <small class="text-muted">Оставьте пустым, чтобы оставить текущее изображение</small>
+            @if (!string.IsNullOrEmpty(Model.Rune.ImageUrl))
+            {
+                <div class="mt-2">
+                    <img src="@Model.Rune.ImageUrl" alt="Current image" style="max-height: 200px;" class="img-thumbnail" />
+                    <p>Текущее изображение</p>
+                </div>
+            }
         </div>
 
         <h4 class="mt-4">Описания для сфер:</h4>
