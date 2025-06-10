@@ -10,6 +10,9 @@ namespace webb_tst_site3.Models
         public SettingGroup? Group { get; set; }
 
         [Required]
+        public string SiteName { get; set; } = "";
+        public string MainPageText { get; set; } = "";
+        [Required]
         [StringLength(100)]
         public string Name { get; set; }
 

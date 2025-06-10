@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using webb_tst_site3.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using webb_tst_site3.Data;
+using System.IO;
 
 namespace webb_tst_site3.Pages.Admin.Articles
 {

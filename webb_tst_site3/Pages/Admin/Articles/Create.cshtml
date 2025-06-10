@@ -27,13 +27,13 @@
         <div class="mb-3">
             <label for="image">Изображение</label>
             <input asp-for="Article.ImageFile" type="file" class="form-control" id="image" />
-        </div>
+        </div>@* 
         <div class="mb-3">
             <label asp-for="ParentId">Родительская статья</label>
             <select asp-for="ParentId" asp-items="Model.Parents" class="form-select">
                 <option value="">(верхний уровень)</option>
             </select>
-        </div>
+        </div> *@
         <div class="form-check mb-3">
             <input asp-for="Article.IsPublished" class="form-check-input" />
             <label asp-for="Article.IsPublished" class="form-check-label">Опубликовано</label>
@@ -42,6 +42,4 @@
         <a asp-page="Index" class="btn btn-secondary">Отмена</a>
     </form>
 </div>
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

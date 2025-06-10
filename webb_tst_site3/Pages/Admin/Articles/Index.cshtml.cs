@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using webb_tst_site3.Models;
-using Microsoft.AspNetCore.Mvc;
 using webb_tst_site3.Data;
+using webb_tst_site3.Models;
 
 namespace webb_tst_site3.Pages.Admin.Articles
 {
     public class IndexModel : PageModel
     {
         private readonly AppDbContext _context;
+
         public IndexModel(AppDbContext context)
         {
             _context = context;
@@ -18,25 +18,33 @@ namespace webb_tst_site3.Pages.Admin.Articles
 
         public async Task OnGetAsync()
         {
-            var all = await _context.Articles
+            var allArticles = await _context.Articles
                 .Include(a => a.Children)
                 .AsNoTracking()
                 .ToListAsync();
 
-            ArticlesTree = all.Where(a => a.ParentId == null)
+            ArticlesTree = allArticles
+                .Where(a => a.ParentId == null)
                 .OrderBy(a => a.Title)
                 .ToList();
+
             foreach (var root in ArticlesTree)
-                FillChildren(root, all);
+            {
+                FillChildren(root, allArticles);
+            }
         }
 
-        private void FillChildren(Article parent, List<Article> all)
+        private void FillChildren(Article parent, List<Article> allArticles)
         {
-            parent.Children = all.Where(a => a.ParentId == parent.Id)
+            parent.Children = allArticles
+                .Where(a => a.ParentId == parent.Id)
                 .OrderBy(a => a.Title)
                 .ToList();
-            foreach (var ch in parent.Children)
-                FillChildren(ch, all);
+
+            foreach (var child in parent.Children)
+            {
+                FillChildren(child, allArticles);
+            }
         }
     }
 }

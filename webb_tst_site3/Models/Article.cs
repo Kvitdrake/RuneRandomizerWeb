@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
 
 namespace webb_tst_site3.Models
 {
@@ -7,36 +8,47 @@ namespace webb_tst_site3.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        public string Title { get; set; }
+        [Required(ErrorMessage = "Название статьи обязательно")]
+        [StringLength(255, ErrorMessage = "Название не должно превышать 255 символов")]
+        public string Title { get; set; } = string.Empty;
 
-        public string Description { get; set; }
+        [Display(Name = "Описание")]
+        public string? Description { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        public string Url { get; set; }
+        [Required(ErrorMessage = "URL обязательно")]
+        [StringLength(255, ErrorMessage = "URL не должен превышать 255 символов")]
+        [Url(ErrorMessage = "Некорректный URL")]
+        public string Url { get; set; } = string.Empty;
 
-        public string ImageUrl { get; set; }
+        [Display(Name = "URL изображения")]
+        public string? ImageUrl { get; set; }
 
         [NotMapped]
-        public IFormFile ImageFile { get; set; }
+        [Display(Name = "Файл изображения")]
+        public IFormFile? ImageFile { get; set; }
 
-        [StringLength(500)]
-        public string Hashtags { get; set; }
+        [Display(Name = "Хэштеги")]
+        [StringLength(500, ErrorMessage = "Хэштеги не должны превышать 500 символов")]
+        public string? Hashtags { get; set; }
 
+        [Display(Name = "Родительская статья")]
         public int? ParentId { get; set; }
-        public Article Parent { get; set; }
 
+        [Display(Name = "Родительская статья")]
+        public Article? Parent { get; set; }
+
+        [Display(Name = "Дочерние статьи")]
         public List<Article> Children { get; set; } = new();
 
+        [Display(Name = "Дата создания")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Дата обновления")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        // Новое свойство для публикации
+        [Display(Name = "Опубликовано")]
         public bool IsPublished { get; set; } = false;
 
-        // Метод для получения списка хэштегов
         public List<string> GetHashtagsList()
         {
             if (string.IsNullOrWhiteSpace(Hashtags))

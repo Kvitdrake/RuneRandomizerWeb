@@ -3,167 +3,28 @@
 @{
     ViewData["Title"] = "Настройки сайта";
 }
-
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>@ViewData["Title"]</h1>
-    </div>
-
-    <div class="row">
-        <div class="col-md-3">
-            <div class="list-group">
-                @foreach (var group in Model.SettingGroups)
-                {
-                    <a href="#group-@group.Id"
-                       class="list-group-item list-group-item-action @(Model.ActiveGroupId == group.Id ? "active" : "")">
-                        @group.Name
-                    </a>
-                }
-            </div>
-        </div>
-
-        <div class="col-md-9">
-            @foreach (var group in Model.SettingGroups)
-            {
-                <div id="group-@group.Id" class="mb-5 @(Model.ActiveGroupId != group.Id ? "d-none" : "")">
-                    <h3>@group.Name</h3>
-                    @if (!string.IsNullOrEmpty(group.Description))
-                    {
-                        <p class="text-muted">@group.Description</p>
-                    }
-
-                    <form method="post" asp-page-handler="UpdateGroup" asp-route-groupId="@group.Id">
-                        <div class="card">
-                            <div class="card-body">
-                                @foreach (var setting in Model.Settings.Where(s => s.GroupId == group.Id).OrderBy(s => s.Order))
-                                {
-                                    <div class="mb-3">
-                                        <label class="form-label">@setting.DisplayName</label>
-
-                                        @if (setting.DataType == "color")
-                                        {
-                                            <input type="color"
-                                                   name="Settings[@setting.Id].Value"
-                                                   value="@setting.Value"
-                                                   class="form-control form-control-color"
-                                            @(setting.Editable ? "" : "disabled")>
-                                        }
-                                        else if (setting.DataType == "image")
-                                        {
-                                            <div class="input-group">
-                                                <input type="text"
-                                                       name="Settings[@setting.Id].Value"
-                                                       value="@setting.Value"
-                                                       class="form-control"
-                                                @(setting.Editable ? "" : "disabled")>
-                                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#imageModal" data-input-id="Settings[@setting.Id].Value">
-                                                    <i class="fas fa-image"></i>
-                                                </button>
-                                            </div>
-                                            @if (!string.IsNullOrEmpty(setting.Value))
-                                            {
-                                                <div class="mt-2">
-                                                    <img src="@setting.Value" style="max-height: 100px;" class="img-thumbnail">
-                                                </div>
-                                            }
-                                        }
-                                        else if (setting.DataType == "boolean")
-                                        {
-                                            <div class="form-check form-switch">
-                                                <input type="checkbox"
-                                                       name="Settings[@setting.Id].Value"
-                                                       value="true"
-                                                       class="form-check-input"
-                                                @(setting.Value == "true" ? "checked" : "")
-                                                @(setting.Editable ? "" : "disabled")>
-                                            </div>
-                                        }
-                                        else if (setting.DataType == "text" || setting.DataType == "html")
-                                        {
-                                            <textarea name="Settings[@setting.Id].Value"
-                                                      class="form-control"
-                                                      rows="3"
-                                            @(setting.Editable ? "" : "disabled")>@setting.Value</textarea>
-                                        }
-                                        else
-                                        {
-                                            <input type="text"
-                                                   name="Settings[@setting.Id].Value"
-                                                   value="@setting.Value"
-                                                   class="form-control"
-                                            @(setting.Editable ? "" : "disabled")>
-                                        }
-
-                                        @if (!string.IsNullOrEmpty(setting.Description))
-                                        {
-                                            <small class="text-muted">@setting.Description</small>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно для выбора изображений -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Выбор изображения</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">URL изображения</label>
-                    <input type="text" id="imageUrlInput" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Загрузить новое изображение</label>
-                    <input type="file" id="imageUpload" class="form-control" accept="image/*">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="button" class="btn btn-primary" id="selectImageBtn">Выбрать</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        // Обработка модального окна для изображений
-        let currentInputId = '';
-        $('#imageModal').on('show.bs.modal', function (event) {
-            const button = $(event.relatedTarget);
-            currentInputId = button.data('input-id');
-            $('#imageUrlInput').val($(`input[name="${currentInputId}"]`).val());
-        });
-
-        $('#selectImageBtn').click(function () {
-            $(`input[name="${currentInputId}"]`).val($('#imageUrlInput').val());
-            $('#imageModal').modal('hide');
-        });
-
-        // Загрузка изображений
-        $('#imageUpload').change(function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            // Здесь должна быть реализация загрузки на сервер
-            // После успешной загрузки:
-            // $('#imageUrlInput').val(response.url);
-        });
-    </script>
+<h1 class="mb-4">Настройки сайта</h1>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
 }
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="Settings.SiteName" class="form-label">Название сайта</label>
+        <input asp-for="Settings.SiteName" class="form-control" />
+        <span asp-validation-for="Settings.SiteName" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Settings.MainPageText" class="form-label">Текст на главной странице</label>
+        <textarea asp-for="Settings.MainPageText" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Settings.MainPageText" class="text-danger"></span>
+    </div>
+
+    @* <div class="mb-3">
+    <label asp-for="Settings.FooterText" class="form-label">Текст в подвале сайта</label>
+    <input asp-for="Settings.FooterText" class="form-control" />
+    <span asp-validation-for="Settings.FooterText" class="text-danger"></span>
+    </div> *@
+
+    <button type="submit" class="btn btn-success">Сохранить</button>
+</form>

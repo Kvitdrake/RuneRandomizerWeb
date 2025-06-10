@@ -6,35 +6,68 @@
 
 <div class="container mt-4">
     <h1 class="mb-4">@ViewData["Title"]</h1>
-    @foreach (var article in Model.Articles.Where(a => a.ParentId == null))
+
+    @if (!Model.Articles.Any())
     {
-        <div class="card mb-3">
-            <div class="card-body">
-                <h3>@article.Title</h3>
-                @if (!string.IsNullOrEmpty(article.ImageUrl))
-                {
-                    <img src="@article.ImageUrl" alt="@article.Title" class="img-fluid mb-2" style="max-height:150px;" />
-                }
-                <p>@article.Description</p>
-                <a href="@article.Url" target="_blank">Читать в Telegram/другом источнике</a>
-                @if (article.Children.Any())
-                {
-                    <ul>
-                        @foreach (var sub in article.Children)
-                        {
-                            <li>
-                                <b>@sub.Title</b>
-                                @if (!string.IsNullOrEmpty(sub.ImageUrl))
+        <div class="alert alert-info">Нет доступных статей</div>
+    }
+    else
+    {
+        @foreach (var article in Model.Articles.Where(a => a.ParentId == null))
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3>@article.Title</h3>
+
+                    @if (!string.IsNullOrEmpty(article.ImageUrl))
+                    {
+                        <img src="@article.ImageUrl" alt="@article.Title"
+                             class="img-fluid mb-2" style="max-height:150px;" />
+                    }
+
+                    @if (!string.IsNullOrEmpty(article.Description))
+                    {
+                        <p>@article.Description</p>
+                    }
+
+                    @if (!string.IsNullOrEmpty(article.Url))
+                    {
+                        <a href="@article.Url" target="_blank" class="btn btn-primary">
+                            Читать статью
+                        </a>
+                    }
+
+                    @if (article.Children.Any())
+                    {
+                        <div class="mt-3">
+                            <h5>Дополнительные материалы:</h5>
+                            <ul class="list-group">
+                                @foreach (var child in article.Children)
                                 {
-                                    <img src="@sub.ImageUrl" alt="@sub.Title" style="max-height:80px;" />
+                                    <li class="list-group-item">
+                                        <h6>@child.Title</h6>
+                                        @if (!string.IsNullOrEmpty(child.ImageUrl))
+                                        {
+                                            <img src="@child.ImageUrl" alt="@child.Title"
+                                                 class="img-fluid mb-1" style="max-height:80px;" />
+                                        }
+                                        @if (!string.IsNullOrEmpty(child.Description))
+                                        {
+                                            <p class="mb-1">@child.Description</p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(child.Url))
+                                        {
+                                            <a href="@child.Url" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                Ссылка
+                                            </a>
+                                        }
+                                    </li>
                                 }
-                                <div>@sub.Description</div>
-                                <a href="@sub.Url" target="_blank">Ссылка</a>
-                            </li>
-                        }
-                    </ul>
-                }
+                            </ul>
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
+        }
     }
 </div>
