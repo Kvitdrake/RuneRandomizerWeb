@@ -1,0 +1,31 @@
+﻿@model webb_tst_site3.Models.Article
+
+<li class="draggable" data-id="@Model.Id">
+    <div>
+        <span class="fw-bold">@Model.Title</span>
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" style="max-height:32px;vertical-align:middle;" />
+        }
+        <span class="badge bg-secondary">@Model.Id</span>
+        <span class="article-actions">
+            <a asp-page="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm" title="Редактировать"><i class="fas fa-edit"></i></a>
+            <a asp-page="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-sm" title="Удалить"><i class="fas fa-trash"></i></a>
+            <a asp-page="Move" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm" title="Переместить"><i class="fas fa-arrows-alt"></i></a>
+            <a asp-page="Create" asp-route-parentId="@Model.Id" class="btn btn-success btn-sm" title="Добавить подраздел"><i class="fas fa-plus"></i></a>
+        </span>
+        @if (!Model.IsPublished)
+        {
+            <span class="badge bg-warning text-dark">Черновик</span>
+        }
+    </div>
+    @if (Model.Children.Any())
+    {
+        <ul class="nested-list">
+            @foreach (var child in Model.Children)
+            {
+                @await Html.PartialAsync("_ArticleTreeItem", child)
+            }
+        </ul>
+    }
+</li>

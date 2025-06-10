@@ -5,45 +5,43 @@
 }
 
 <div class="container">
-    <h1>@ViewData["Title"]</h1>
+    <h2>@ViewData["Title"]</h2>
     <form method="post" enctype="multipart/form-data">
-        <div class="form-group mb-3">
+        <div class="mb-3">
             <label asp-for="Article.Title"></label>
             <input asp-for="Article.Title" class="form-control" />
             <span asp-validation-for="Article.Title" class="text-danger"></span>
         </div>
-        <div class="form-group mb-3">
+        <div class="mb-3">
             <label asp-for="Article.Description"></label>
-            <textarea asp-for="Article.Description" class="form-control" rows="3"></textarea>
+            <textarea asp-for="Article.Description" class="form-control"></textarea>
         </div>
-        <div class="form-group mb-3">
+        <div class="mb-3">
             <label asp-for="Article.Url"></label>
             <input asp-for="Article.Url" class="form-control" />
-            <span asp-validation-for="Article.Url" class="text-danger"></span>
         </div>
-        <div class="form-group mb-3">
+        <div class="mb-3">
             <label asp-for="Article.Hashtags"></label>
-            <input asp-for="Article.Hashtags" class="form-control" placeholder="#теги" />
+            <input asp-for="Article.Hashtags" class="form-control" />
         </div>
-        <div class="form-group mb-3">
-            <label>Изображение</label>
-            <input asp-for="Article.ImageFile" type="file" class="form-control" />
+        <div class="mb-3">
+            <label for="image">Изображение</label>
+            <input asp-for="Article.ImageFile" type="file" class="form-control" id="image" />
         </div>
-        <div class="form-group mb-3">
-            <label asp-for="Article.ParentId">Родительская статья/раздел</label>
-            <select asp-for="Article.ParentId" asp-items="Model.ParentArticles" class="form-control">
-                <option value="">Без родителя (раздел верхнего уровня)</option>
+        <div class="mb-3">
+            <label asp-for="ParentId">Родительская статья</label>
+            <select asp-for="ParentId" asp-items="Model.Parents" class="form-select">
+                <option value="">(верхний уровень)</option>
             </select>
         </div>
-        <div class="form-group form-check mb-3">
+        <div class="form-check mb-3">
             <input asp-for="Article.IsPublished" class="form-check-input" />
-            <label asp-for="Article.IsPublished" class="form-check-label">Опубликовать</label>
+            <label asp-for="Article.IsPublished" class="form-check-label">Опубликовано</label>
         </div>
         <button type="submit" class="btn btn-primary">Сохранить</button>
         <a asp-page="Index" class="btn btn-secondary">Отмена</a>
     </form>
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

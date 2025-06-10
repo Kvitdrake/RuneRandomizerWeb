@@ -51,16 +51,16 @@ namespace webb_tst_site3.Pages.Quiz
 
         public async Task<IActionResult> OnPostAsync(int quizId, int questionId, int answerId, int currentQuestionNumber)
         {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrEmpty(userId))
+            /*if (string.IsNullOrEmpty(userId))
             {
                 return Challenge();
-            }
+            }*/
 
             var userAnswer = new UserQuizAnswer
             {
-                UserId = userId,
+                //UserId = userId,
                 QuizId = quizId,
                 QuestionId = questionId,
                 AnswerId = answerId

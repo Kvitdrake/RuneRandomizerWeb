@@ -1,43 +1,62 @@
 ﻿@page
 @model webb_tst_site3.Pages.Admin.Articles.IndexModel
 @{
-    ViewData["Title"] = "Статьи";
+    ViewData["Title"] = "Управление статьями";
+}
+
+@section Styles {
+    <style>
+        .nested-list {
+            list-style: none;
+            margin-left: 1em;
+        }
+
+            .nested-list li {
+                margin: 6px 0;
+            }
+
+        .article-actions .btn {
+            margin-right: .2em;
+        }
+
+        .draggable {
+            cursor: move;
+        }
+    </style>
 }
 
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>@ViewData["Title"]</h1>
-        <a asp-page="Create" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Добавить статью
-        </a>
-    </div>
+    <h1 class="mb-3">@ViewData["Title"]</h1>
+    <a asp-page="Create" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Добавить статью</a>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Название</th>
-                <th>Ссылка</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var article in Model.Articles)
+    @if (Model.ArticlesTree.Any())
+    {
+        <ul class="nested-list" id="articleTree">
+            @foreach (var article in Model.ArticlesTree)
             {
-                <tr>
-                    <td>@article.Title</td>
-                    <td>
-                        <a href="@article.Url" target="_blank">@article.Url</a>
-                    </td>
-                    <td>
-                        <a asp-page="./Edit" asp-route-id="@article.Id" class="btn btn-sm btn-warning">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a asp-page="./Delete" asp-route-id="@article.Id" class="btn btn-sm btn-danger">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                    </td>
-                </tr>
+                @await Html.PartialAsync("_ArticleTreeItem", article)
             }
-        </tbody>
-    </table>
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info">Нет статей, создайте первую!</div>
+    }
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script>
+        // Drag & drop сортировка (backend для этого нужен отдельный API)
+        new Sortable(document.getElementById('articleTree'), {
+            group: 'articles',
+            animation: 150,
+            fallbackOnBody: true,
+            swapThreshold: 0.65,
+            onEnd: function (evt) {
+                // Сюда можно добавить ajax-запрос для обновления родителя/порядка
+                // Пример: fetch('/Admin/Articles/Move?id=...&newParentId=...')
+            }
+        });
+    </script>
+}

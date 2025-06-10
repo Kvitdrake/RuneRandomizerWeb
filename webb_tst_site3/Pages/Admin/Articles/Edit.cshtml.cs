@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using webb_tst_site3.Data;
 using webb_tst_site3.Models;
-using Microsoft.EntityFrameworkCore;
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using webb_tst_site3.Data;
 
 namespace webb_tst_site3.Pages.Admin.Articles
 {
@@ -13,92 +11,53 @@ namespace webb_tst_site3.Pages.Admin.Articles
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _environment;
 
-        [BindProperty]
-        public Article Article { get; set; }
-
-        [BindProperty]
-        public bool DeleteImage { get; set; }
+        [BindProperty] public Article Article { get; set; }
+        public SelectList? Parents { get; set; }
 
         public EditModel(AppDbContext context, IWebHostEnvironment environment)
         {
-            _context = context;
-            _environment = environment;
+            _context = context; _environment = environment;
         }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Article = await _context.Articles.FindAsync(id);
-
-            if (Article == null)
-            {
-                return NotFound();
-            }
-
+            Article = await _context.Articles.FindAsync(id)
+                ?? throw new Exception("Not found");
+            Parents = new SelectList(_context.Articles.Where(a => a.Id != id), "Id", "Title", Article.ParentId);
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            /*if (!ModelState.IsValid)
             {
+                Parents = new SelectList(_context.Articles.Where(a => a.Id != Article.Id), "Id", "Title", Article.ParentId);
                 return Page();
-            }
+            }*/
 
-            var existingArticle = await _context.Articles.FindAsync(Article.Id);
-            if (existingArticle == null)
-            {
-                return NotFound();
-            }
+            var existing = await _context.Articles.FindAsync(Article.Id);
+            if (existing == null) return NotFound();
 
-            existingArticle.Title = Article.Title;
-            existingArticle.Description = Article.Description;
-            existingArticle.Url = Article.Url;
-            existingArticle.Hashtags = Article.Hashtags;
-            existingArticle.UpdatedAt = DateTime.UtcNow;
-
-            // Обработка изображения
-            if (DeleteImage && !string.IsNullOrEmpty(existingArticle.ImageUrl))
-            {
-                var filePath = Path.Combine(_environment.WebRootPath, existingArticle.ImageUrl.TrimStart('/'));
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-                existingArticle.ImageUrl = null;
-            }
+            existing.Title = Article.Title;
+            existing.Description = Article.Description;
+            existing.Url = Article.Url;
+            existing.Hashtags = Article.Hashtags;
+            existing.IsPublished = Article.IsPublished;
+            existing.ParentId = Article.ParentId;
 
             if (Article.ImageFile != null && Article.ImageFile.Length > 0)
             {
-                // Удаляем старое изображение
-                if (!string.IsNullOrEmpty(existingArticle.ImageUrl))
-                {
-                    var oldFilePath = Path.Combine(_environment.WebRootPath, existingArticle.ImageUrl.TrimStart('/'));
-                    if (System.IO.File.Exists(oldFilePath))
-                    {
-                        System.IO.File.Delete(oldFilePath);
-                    }
-                }
-
-                // Сохраняем новое изображение
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads/articles");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Article.ImageFile.FileName);
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
+                var uploads = Path.Combine(_environment.WebRootPath, "uploads/articles");
+                Directory.CreateDirectory(uploads);
+                var fileName = Guid.NewGuid() + Path.GetExtension(Article.ImageFile.FileName);
+                var filePath = Path.Combine(uploads, fileName);
                 using (var stream = new FileStream(filePath, FileMode.Create))
-                {
                     await Article.ImageFile.CopyToAsync(stream);
-                }
-
-                existingArticle.ImageUrl = "/uploads/articles/" + fileName;
+                existing.ImageUrl = "/uploads/articles/" + fileName;
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToPage("./Index");
+            return RedirectToPage("Index");
         }
     }
 }

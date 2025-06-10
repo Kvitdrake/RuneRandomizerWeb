@@ -3,25 +3,10 @@
 @{
     ViewData["Title"] = "Удалить статью";
 }
-
 <div class="container">
-    <h1>@ViewData["Title"]</h1>
-    <h3>Вы уверены, что хотите удалить эту статью?</h3>
-
-    <div class="card mb-4">
-        <div class="card-body">
-            <h4>@Model.Article.Title</h4>
-            <p>@Model.Article.Description</p>
-            @if (!string.IsNullOrEmpty(Model.Article.ImageUrl))
-            {
-                <img src="@Model.Article.ImageUrl" class="img-thumbnail" style="max-height: 200px;" />
-            }
-        </div>
-    </div>
-
+    <h3>Удалить статью "@Model.Article?.Title"?</h3>
     <form method="post">
         <input type="hidden" asp-for="Article.Id" />
-        <input type="hidden" asp-for="Article.ImageUrl" />
         <button type="submit" class="btn btn-danger">Удалить</button>
         <a asp-page="Index" class="btn btn-secondary">Отмена</a>
     </form>

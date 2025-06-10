@@ -1,0 +1,19 @@
+﻿@page "{id:int}"
+@model webb_tst_site3.Pages.Admin.Articles.MoveModel
+@{
+    ViewData["Title"] = "Переместить статью";
+}
+<div class="container">
+    <h3>Переместить "@Model.Article?.Title"</h3>
+    <form method="post">
+        <input type="hidden" asp-for="Id" />
+        <div class="mb-3">
+            <label>Новый родитель</label>
+            <select asp-for="NewParentId" asp-items="Model.Parents" class="form-select">
+                <option value="">(верхний уровень)</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Переместить</button>
+        <a asp-page="Index" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
