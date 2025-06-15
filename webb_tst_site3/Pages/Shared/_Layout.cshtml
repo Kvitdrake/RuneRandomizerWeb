@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(ViewData["SiteName"] ?? "Fiend Magic") - @ViewData["Title"]</title>
+    <title>@(ViewData["SiteName"] ?? "Soltias Site") - @ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -25,9 +25,9 @@
                 <a class="navbar-brand" asp-area="" asp-page="@(User.IsInRole("Admin") ? "/Admin/Index" : "/Home")">
                     @if (!string.IsNullOrEmpty(ViewData["LogoUrl"] as string))
                     {
-                        <img src="@ViewData["LogoUrl"]" alt="@(ViewData["SiteName"] ?? "Fiend Magic")" height="40" class="me-2">
+                        <img src="@ViewData["LogoUrl"]" alt="@(ViewData["SiteName"] ?? "Soltias Site")" height="40" class="me-2">
                     }
-                    @(ViewData["SiteName"] ?? "Fiend Magic")
+                    @(ViewData["SiteName"] ?? "Soltias Site")
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>

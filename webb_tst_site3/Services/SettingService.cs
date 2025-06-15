@@ -22,7 +22,7 @@ namespace webb_tst_site3.Services
         }
         public async Task<string> GetSiteNameAsync()
         {
-            return await GetSettingAsync("SiteName", "Fiend Magic");
+            return await GetSettingAsync("SiteName", "Soltias Site");
         }
         public async Task<string> GetSettingAsync(string name, string defaultValue = "")
         {
