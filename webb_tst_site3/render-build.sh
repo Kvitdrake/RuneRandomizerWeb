@@ -10,4 +10,4 @@ ls -la
 
 echo "===== Сборка .NET приложения ====="
 dotnet restore
-dotnet publish -c Release -o ../publish
+dotnet publish -c Release -o ../bin/Release/net8.0
