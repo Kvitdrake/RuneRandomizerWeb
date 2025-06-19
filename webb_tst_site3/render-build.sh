@@ -1,13 +1,20 @@
 #!/bin/bash
+set -e  # Прерывать при ошибках
+
 echo "===== Установка .NET 8 ====="
-# Принудительная установка .NET
-curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version 8.0.100
-export PATH="$HOME/.dotnet:$PATH"
+# Устанавливаем .NET в системную папку
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version 8.0.100 --install-dir /opt/render/.dotnet
+export DOTNET_ROOT=/opt/render/.dotnet
+export PATH=$PATH:$DOTNET_ROOT
 
 echo "===== Пути проекта ====="
 pwd
 ls -la
 
-echo "===== Сборка .NET приложения ====="
+echo "===== Переход в папку проекта ====="
+
+echo "===== Восстановление зависимостей ====="
 dotnet restore
-dotnet publish -c Release -o ../bin/Release/net8.0
+
+echo "===== Сборка приложения ====="
+dotnet publish -c Release -o /opt/render/publish -r linux-x64 --self-contained true

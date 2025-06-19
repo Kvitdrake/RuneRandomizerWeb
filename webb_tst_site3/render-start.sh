@@ -1,10 +1,11 @@
 #!/bin/bash
-export DOTNET_ROOT=$HOME/.dotnet
+export DOTNET_ROOT=/opt/render/.dotnet
 export PATH=$PATH:$DOTNET_ROOT
 
 echo "===== Проверка окружения ====="
 dotnet --info
-ls -la $HOME
+ls -la /opt/render
 
-cd $HOME/bin/Release/net8.0
+echo "===== Запуск приложения ====="
+cd /opt/render/publish
 dotnet webb_tst_site3.dll --urls "http://0.0.0.0:$PORT"
