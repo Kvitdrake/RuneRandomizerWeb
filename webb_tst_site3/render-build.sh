@@ -9,6 +9,5 @@ pwd
 ls -la
 
 echo "===== Сборка .NET приложения ====="
-cd webb_tst_site3 || exit
 dotnet restore
 dotnet publish -c Release -o ../publish
