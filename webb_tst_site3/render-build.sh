@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "----- Restoring dependencies -----"
-dotnet restore
-echo "----- Publishing application -----"
-dotnet publish -c Release -o ./publish --no-restore
+echo "----- Building .NET application -----"
+cd ./webb_tst_site3
+dotnet publish -c Release -o ../publish
