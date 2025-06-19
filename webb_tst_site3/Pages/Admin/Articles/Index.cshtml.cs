@@ -1,3 +1,4 @@
+// IndexModel.cs
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using webb_tst_site3.Data;
@@ -25,7 +26,8 @@ namespace webb_tst_site3.Pages.Admin.Articles
 
             ArticlesTree = allArticles
                 .Where(a => a.ParentId == null)
-                .OrderBy(a => a.Title)
+                .OrderBy(a => a.DisplayOrder)
+                .ThenBy(a => a.Title)
                 .ToList();
 
             foreach (var root in ArticlesTree)
@@ -38,7 +40,8 @@ namespace webb_tst_site3.Pages.Admin.Articles
         {
             parent.Children = allArticles
                 .Where(a => a.ParentId == parent.Id)
-                .OrderBy(a => a.Title)
+                .OrderBy(a => a.DisplayOrder)
+                .ThenBy(a => a.Title)
                 .ToList();
 
             foreach (var child in parent.Children)

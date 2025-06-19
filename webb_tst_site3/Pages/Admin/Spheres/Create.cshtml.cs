@@ -19,10 +19,10 @@ namespace webb_tst_site3.Pages.Admin.Spheres
         public Sphere Sphere { get; set; }
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            /*if (!ModelState.IsValid)
             {
                 return Page();
-            }
+            }*/
 
             // Установка значений по умолчанию
             Sphere.ImageUrl ??= "/images/default-sphere.png";

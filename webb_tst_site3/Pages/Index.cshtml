@@ -12,27 +12,31 @@
         <div class="card-body">
             @if (!User.Identity.IsAuthenticated)
             {
-                <h3 class="mb-4">Выберите роль:</h3>
+                <h3 class="mb-4">Войдите в систему</h3>
                 <div class="d-grid gap-3">
-                    <a href="/Home" class="btn btn-primary btn-lg py-3">
-                        <i class="fas fa-user me-2"></i>Пользователь
+                    <a href="/Auth/Login" class="btn btn-primary btn-lg py-3">
+                        <i class="fas fa-sign-in-alt me-2"></i>Войти
                     </a>
-                    <a href="/Admin/Login" class="btn btn-outline-secondary btn-lg py-3">
-                        <i class="fas fa-lock me-2"></i>Администратор
+                    <a href="/Auth/Register" class="btn btn-outline-primary btn-lg py-3">
+                        <i class="fas fa-user-plus me-2"></i>Зарегистрироваться
                     </a>
-                </div>
-            }
-            else @if (User.IsInRole("Admin"))
-            {
-                <div class="d-grid">
-                    <a href="/Admin/Index" class="btn btn-primary btn-lg py-3">
-                        <i class="fas fa-tachometer-alt me-2"></i>Панель управления
-                    </a>
+                    @if (!string.IsNullOrEmpty(Model.TelegramBotAuthUrl))
+                    {
+                        <a href="@Model.TelegramBotAuthUrl" class="btn btn-telegram btn-lg py-3" style="background-color: #0088cc; color: white;">
+                            <i class="fab fa-telegram me-2"></i>Войти через Telegram
+                        </a>
+                    }
                 </div>
             }
             else
             {
-                <div class="d-grid">
+                <div class="d-grid gap-3">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a href="/Admin/Index" class="btn btn-primary btn-lg py-3">
+                            <i class="fas fa-tachometer-alt me-2"></i>Панель управления
+                        </a>
+                    }
                     <a href="/Home" class="btn btn-primary btn-lg py-3">
                         <i class="fas fa-home me-2"></i>Главная страница
                     </a>

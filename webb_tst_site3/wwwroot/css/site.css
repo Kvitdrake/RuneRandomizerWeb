@@ -1,50 +1,39 @@
-/* Основные цвета и переменные */
+/* Основные переменные */
 :root {
-    --primary-color: #6c5ce7;
+    --primary: #6c5ce7;
     --primary-dark: #5649c0;
     --primary-light: #a29bfe;
-    --secondary-color: #0984e3;
+    --secondary: #0984e3;
     --secondary-dark: #0767b3;
-    --accent-gold: #fdcb6e;
-    --accent-silver: #b2bec3;
-    --dark-color: #2d3436;
-    --darker-color: #1e272e;
-    --light-color: #f5f6fa;
-    --lighter-color: #ffffff;
-    --success-color: #00b894;
-    --danger-color: #d63031;
-    --warning-color: #fdcb6e;
-    --info-color: #0984e3;
+    --accent: #fdcb6e;
+    --dark: #2d3436;
+    --darker: #1e272e;
+    --light: #f5f6fa;
+    --lighter: #ffffff;
+    --success: #00b894;
+    --danger: #d63031;
+    --warning: #fdcb6e;
+    --info: #0984e3;
     --border-radius: 12px;
-    --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
 }
-
-/* Базовые стили */
-body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color: var(--dark-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    line-height: 1.6;
-}
-
 /* Навигационная панель */
 .navbar {
-    background: linear-gradient(to right, var(--darker-color), var(--dark-color)) !important;
-    box-shadow: var(--box-shadow);
+    background: linear-gradient(to right, var(--darker), var(--dark)) !important;
+    box-shadow: var(--shadow);
     padding: 0.8rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .navbar-brand {
     font-weight: 700;
     font-size: 1.5rem;
-    color: var(--light-color) !important;
+    color: var(--lighter) !important;
     display: flex;
     align-items: center;
-    transition: var(--transition);
 }
 
     .navbar-brand:hover {
@@ -57,29 +46,50 @@ body {
     }
 
 .nav-link {
-    color: var(--light-color) !important;
+    color: var(--lighter) !important;
     font-weight: 500;
     padding: 0.5rem 1rem !important;
     border-radius: var(--border-radius);
     transition: var(--transition);
-    margin: 0 0.2rem;
 }
 
-    .nav-link:hover, .nav-link.active {
+    .nav-link:hover {
         background-color: rgba(255, 255, 255, 0.1);
-        color: var(--primary-light) !important;
     }
+
+.navbar-toggler {
+    border-color: rgba(255,255,255,0.1);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+/* Базовые стили */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--dark);
+    background-color: var(--light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Контейнеры */
+.container {
+    padding: 2rem 1rem;
+    max-width: 1200px;
+}
 
 /* Карточки */
 .card {
     border: none;
     border-radius: var(--border-radius);
-    overflow: hidden;
+    box-shadow: var(--shadow);
     transition: var(--transition);
-    background-color: var(--lighter-color);
+    background: var(--lighter);
     margin-bottom: 1.5rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
     .card:hover {
@@ -88,11 +98,11 @@ body {
     }
 
 .card-header {
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(to right, var(--primary), var(--secondary));
     color: white;
-    font-weight: 600;
     padding: 1rem 1.5rem;
     border-bottom: none;
+    font-weight: 600;
 }
 
 .card-body {
@@ -100,73 +110,127 @@ body {
 }
 
 .card-footer {
-    background-color: rgba(0, 0, 0, 0.03);
+    background: rgba(0, 0, 0, 0.03);
     border-top: none;
     padding: 1rem 1.5rem;
-}
-
-/* Кнопки */
-.btn {
-    border-radius: var(--border-radius);
-    font-weight: 500;
-    padding: 0.5rem 1.25rem;
-    transition: var(--transition);
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    background-image: linear-gradient(to right, var(--primary-color), var(--primary-dark));
-    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
-}
-
-    .btn-primary:hover {
-        background-color: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 7px 20px rgba(108, 92, 231, 0.4);
-    }
-
-.btn-outline-primary {
-    color: var(--primary-color);
-    border: 2px solid var(--primary-color);
-    background-color: transparent;
-}
-
-    .btn-outline-primary:hover {
-        background-color: var(--primary-color);
-        color: white;
-    }
-
-.btn-lg {
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
 }
 
 /* Формы */
 .form-control, .form-select {
     border-radius: var(--border-radius);
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1rem;
     border: 1px solid #dfe6e9;
     transition: var(--transition);
 }
 
     .form-control:focus, .form-select:focus {
-        border-color: var(--primary-color);
+        border-color: var(--primary);
         box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
     }
 
 .form-label {
     font-weight: 500;
     margin-bottom: 0.5rem;
-    color: var(--dark-color);
+    display: block;
 }
 
-/* Иконки */
-.fas, .far {
-    margin-right: 8px;
+/* Кнопки */
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: var(--transition);
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+.btn-secondary {
+    background: var(--secondary);
+    color: white;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+/* Специальные стили для страницы редактирования рун */
+.sphere-card {
+    border: 1px solid rgba(108, 92, 231, 0.2);
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.sphere-card-header {
+    background: rgba(108, 92, 231, 0.1);
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    border-bottom: 1px solid rgba(108, 92, 231, 0.1);
+}
+
+.sphere-card-body {
+    padding: 1.5rem;
+}
+
+.sphere-textarea {
+    min-height: 120px;
+    width: 100%;
+    border: 1px solid rgba(108, 92, 231, 0.3);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    transition: var(--transition);
+}
+
+    .sphere-textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+    }
+
+/* Изображения */
+.img-thumbnail {
+    border-radius: var(--border-radius);
+    border: 1px solid #dee2e6;
+    padding: 0.25rem;
+    background: white;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Ошибки */
+.text-danger {
+    color: var(--danger);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .card-body, .sphere-card-body {
+        padding: 1rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+    }
 }
 
 /* Анимации */
@@ -184,284 +248,4 @@ body {
 
 .fade-in {
     animation: fadeIn 0.5s ease-out forwards;
-}
-
-/* Прогресс бар */
-.progress {
-    height: 10px;
-    border-radius: 5px;
-    background-color: #e9ecef;
-    margin-bottom: 1.5rem;
-}
-
-.progress-bar {
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    border-radius: 5px;
-    transition: width 0.6s ease;
-}
-
-/* Таблицы */
-.table {
-    border-radius: var(--border-radius);
-    overflow: hidden;
-}
-
-    .table thead th {
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-    }
-
-.table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(108, 92, 231, 0.05);
-}
-
-/* Контейнеры */
-.container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}
-
-/* Футер */
-.footer {
-    background: linear-gradient(to right, var(--darker-color), var(--dark-color));
-    color: white;
-    padding: 1.5rem 0;
-    margin-top: auto;
-}
-
-    .footer a {
-        color: var(--primary-light);
-        transition: var(--transition);
-    }
-
-        .footer a:hover {
-            color: white;
-            text-decoration: none;
-        }
-
-/* Специальные элементы */
-.rounded-lg {
-    border-radius: calc(var(--border-radius) * 1.5);
-}
-
-.shadow-sm {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
-.shadow {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-
-/* Дополнительные стили для рун */
-.rune-card {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(108, 92, 231, 0.2);
-}
-
-    .rune-card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
-        transition: var(--transition);
-        opacity: 0;
-    }
-
-    .rune-card:hover::before {
-        opacity: 1;
-    }
-
-/* Адаптивность */
-@media (max-width: 768px) {
-    .navbar-brand {
-        font-size: 1.2rem;
-    }
-
-    .card {
-        margin-bottom: 1rem;
-    }
-
-    .btn {
-        padding: 0.4rem 1rem;
-    }
-}
-
-/* Стили для drag-and-drop */
-.draggable-row {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary-color) transparent;
-}
-
-    .draggable-row::-webkit-scrollbar {
-        height: 6px;
-    }
-
-    .draggable-row::-webkit-scrollbar-thumb {
-        background-color: var(--primary-color);
-        border-radius: 3px;
-    }
-
-.draggable-card {
-    cursor: grab;
-    user-select: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-    min-width: 250px;
-    flex-shrink: 0;
-}
-
-    .draggable-card:active {
-        cursor: grabbing;
-        transform: scale(1.02) rotate(2deg);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .draggable-card.ghost {
-        opacity: 0.5;
-        background: #f8f9fa;
-        transform: scale(0.95);
-    }
-
-/* Стили для изображений */
-.img-thumbnail {
-    border-radius: var(--border-radius);
-    padding: 0.25rem;
-    background-color: white;
-    border: 1px solid #dee2e6;
-    transition: var(--transition);
-}
-
-    .img-thumbnail:hover {
-        transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-/* Стили для алертов */
-.alert {
-    border-radius: var(--border-radius);
-    border: none;
-    padding: 1rem 1.5rem;
-}
-
-.alert-primary {
-    background-color: var(--primary-light);
-    color: var(--darker-color);
-}
-
-.alert-success {
-    background-color: rgba(0, 184, 148, 0.2);
-    color: #00866d;
-}
-
-.alert-danger {
-    background-color: rgba(214, 48, 49, 0.2);
-    color: #b32b2b;
-}
-
-/* Кастомные классы */
-.gradient-bg {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-}
-
-.text-gradient {
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-/* Эффекты при наведении */
-.hover-scale {
-    transition: var(--transition);
-}
-
-    .hover-scale:hover {
-        transform: scale(1.03);
-    }
-
-/* Стили для модальных окон */
-.modal-content {
-    border-radius: var(--border-radius);
-    border: none;
-    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
-}
-
-.modal-header {
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    color: white;
-    border-bottom: none;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-}
-
-.modal-footer {
-    border-top: none;
-}
-
-/* Стили для табов */
-.nav-tabs .nav-link {
-    color: var(--dark-color);
-    border: none;
-    padding: 0.75rem 1.5rem;
-    margin-right: 0.5rem;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-    .nav-tabs .nav-link.active {
-        background-color: var(--primary-color);
-        color: white;
-    }
-
-/* Стили для аккордеона */
-.accordion-button {
-    border-radius: var(--border-radius) !important;
-    font-weight: 500;
-}
-
-    .accordion-button:not(.collapsed) {
-        background-color: var(--primary-light);
-        color: var(--darker-color);
-    }
-
-/* Стили для списков */
-.list-group-item {
-    border: none;
-    padding: 1rem 1.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: var(--border-radius) !important;
-    transition: var(--transition);
-}
-
-    .list-group-item:hover {
-        background-color: rgba(108, 92, 231, 0.1);
-    }
-
-.list-group-item-action.active {
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    border: none;
-}
-/* Сделать кнопки всегда видимыми */
-.btn {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-    /* Убрать эффекты hover, если они скрывают кнопки */
-    .btn:hover {
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
-
-/* Для кнопок в навбаре */
-.navbar .btn {
-    display: inline-block !important;
 }

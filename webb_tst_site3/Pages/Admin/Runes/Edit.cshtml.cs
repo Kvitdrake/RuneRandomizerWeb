@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using webb_tst_site3.Data;
-using webb_tst_site3.Models;
-using System.Collections.Generic;
+using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
+using webb_tst_site3.Data;
+using webb_tst_site3.Models;
 using Microsoft.AspNetCore.Hosting;
-using System.IO;
 
 namespace webb_tst_site3.Pages.Admin.Runes
 {
@@ -29,6 +28,7 @@ namespace webb_tst_site3.Pages.Admin.Runes
         [BindProperty]
         public IFormFile ImageFile { get; set; }
 
+        public string CurrentImageUrl { get; set; }
         public List<Sphere> AllSpheres { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
@@ -38,35 +38,33 @@ namespace webb_tst_site3.Pages.Admin.Runes
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (Rune == null)
+            {
                 return NotFound();
+            }
 
+            CurrentImageUrl = Rune.ImageUrl;
             AllSpheres = await _context.Spheres.ToListAsync();
             return Page();
         }
 
-        public string GetSphereDescription(int sphereId)
-        {
-            return Rune?.SphereDescriptions?.FirstOrDefault(sd => sd.SphereId == sphereId)?.Description ?? "";
-        }
-
         public async Task<IActionResult> OnPostAsync()
         {
-            AllSpheres = await _context.Spheres.ToListAsync();
 
-            // Найти существующую руну в базе с описаниями по сферам
             var existingRune = await _context.Runes
                 .Include(r => r.SphereDescriptions)
                 .FirstOrDefaultAsync(r => r.Id == Rune.Id);
 
             if (existingRune == null)
+            {
                 return NotFound();
+            }
 
             // Обновляем основные свойства
             existingRune.Name = Rune.Name;
             existingRune.BaseDescription = Rune.BaseDescription;
             existingRune.UpdatedAt = DateTime.UtcNow;
 
-            // Обработка загрузки изображения
+            // Обработка изображения
             if (ImageFile != null && ImageFile.Length > 0)
             {
                 var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
@@ -83,26 +81,63 @@ namespace webb_tst_site3.Pages.Admin.Runes
                     await ImageFile.CopyToAsync(fileStream);
                 }
 
+                // Удаляем старое изображение, если оно не дефолтное
+                if (!string.IsNullOrEmpty(existingRune.ImageUrl) &&
+                    !existingRune.ImageUrl.Contains("default-rune.png"))
+                {
+                    var oldFilePath = Path.Combine(_environment.WebRootPath, existingRune.ImageUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
                 existingRune.ImageUrl = "/uploads/" + uniqueFileName;
             }
-            else if (string.IsNullOrWhiteSpace(Rune.ImageUrl))
+            // Если изображение не загружено, оставляем текущее
+            else if (!string.IsNullOrEmpty(Request.Form["Rune.ImageUrl"]))
             {
-                existingRune.ImageUrl = "/images/default-rune.png";
+                existingRune.ImageUrl = Request.Form["Rune.ImageUrl"];
             }
+            AllSpheres = await _context.Spheres.ToListAsync();
 
-            // Обновляем описания по сферам ИЗ Request.Form
-            foreach (var sd in existingRune.SphereDescriptions)
+            // Обновляем описания по сферам
+            foreach (var sphere in AllSpheres)
             {
-                if (Request.Form.TryGetValue($"SphereDescriptions[{sd.SphereId}]", out var newDesc))
+                var sphereDesc = existingRune.SphereDescriptions
+                    .FirstOrDefault(sd => sd.SphereId == sphere.Id);
+
+                if (sphereDesc != null)
                 {
-                    sd.Description = newDesc;
+                    if (Request.Form.TryGetValue($"SphereDescriptions[{sphere.Id}]", out var newDesc))
+                    {
+                        sphereDesc.Description = newDesc;
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(Request.Form[$"SphereDescriptions[{sphere.Id}]"]))
+                    {
+                        existingRune.SphereDescriptions.Add(new RuneSphereDescription
+                        {
+                            SphereId = sphere.Id,
+                            Description = Request.Form[$"SphereDescriptions[{sphere.Id}]"]
+                        });
+                    }
                 }
             }
 
-            await _context.SaveChangesAsync();
-
-            // После успешного сохранения возвращаемся к списку рун
-            return RedirectToPage("./Index");
+            try
+            {
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+            catch (DbUpdateException ex)
+            {
+                ModelState.AddModelError("", "Ошибка при сохранении: " + ex.Message);
+                AllSpheres = await _context.Spheres.ToListAsync();
+                return Page();
+            }
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
@@ -7,7 +6,7 @@
     <title>@(ViewData["SiteName"] ?? "Soltias Site") - @ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         :root {
             --primary-color: @ViewData["PrimaryColor"];
@@ -15,69 +14,156 @@
             --background-color: @ViewData["BackgroundColor"];
             --text-color: @ViewData["TextColor"];
         }
+
+        .navbar {
+            background-color: var(--primary-color) !important;
+        }
+
+        .btn-telegram {
+            background-color: #0088cc;
+            color: white;
+        }
+
+            .btn-telegram:hover {
+                background-color: #0077bb;
+                color: white;
+            }
+
+        .dropdown-menu {
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
     </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100" style="background-color: var(--background-color); color: var(--text-color);">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-dark mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark shadow">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="@(User.IsInRole("Admin") ? "/Admin/Index" : "/Home")">
+                <a class="navbar-brand d-flex align-items-center" asp-page="/Index">
                     @if (!string.IsNullOrEmpty(ViewData["LogoUrl"] as string))
                     {
-                        <img src="@ViewData["LogoUrl"]" alt="@(ViewData["SiteName"] ?? "Soltias Site")" height="40" class="me-2">
+                        <img src="@ViewData["LogoUrl"]" alt="@(ViewData["SiteName"] ?? "Fiend Magic")" height="40" class="me-2 rounded-circle">
                     }
-                    @(ViewData["SiteName"] ?? "Soltias Site")
+                    <span class="fw-bold">@(ViewData["SiteName"] ?? "Fiend Magic")</span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Home">
-                                <i class="fas fa-home"></i> Главная
+                            <a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Home" ? "active" : "")" asp-page="/Home">
+                                <i class="fas fa-home me-1"></i>Главная
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-page="/Randomizer">
-                                <i class="fas fa-random"></i> Генератор рун
+                            <a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Randomizer" ? "active" : "")" asp-page="/Randomizer">
+                                <i class="fas fa-random me-1"></i>Генератор рун
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-page="/Quiz/Index">
-                                <i class="fas fa-question-circle"></i> Квизы
+                            <a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Quiz/Index" ? "active" : "")" asp-page="/Quiz/Index">
+                                <i class="fas fa-question-circle me-1"></i>Квизы
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-page="/Articles">
-                                <i class="fas fa-newspaper"></i> Статьи
+                            <a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Articles" ? "active" : "")" asp-page="/Articles">
+                                <i class="fas fa-newspaper me-1"></i>Статьи
                             </a>
                         </li>
-                        @* Админская панель только для админа *@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-page="/Admin/Index">
-                                    <i class="fas fa-cogs"></i> Панель управления
+                                <a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Admin/Index" ? "active" : "")" asp-page="/Admin/Index">
+                                    <i class="fas fa-cogs me-1"></i>Панель управления
                                 </a>
                             </li>
                         }
                     </ul>
-                    <partial name="_LoginPartial" />
+
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    @if (!string.IsNullOrEmpty(ViewBag.UserPhotoUrl))
+                                    {
+                                        <img src="@ViewBag.UserPhotoUrl" class="rounded-circle me-2" height="30" width="30" alt="Profile">
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-user-circle me-2"></i>
+                                    }
+                                    <span>@User.Identity.Name</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" asp-page="/Profile">
+                                            <i class="fas fa-user me-2"></i>Профиль
+                                        </a>
+                                    </li>
+                                    @if (!User.HasClaim(c => c.Type == "TelegramId"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@ViewBag.TelegramConnectUrl">
+                                                <i class="fab fa-telegram me-2"></i>Привязать Telegram
+                                            </a>
+                                        </li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-page="/Auth/Logout" method="post">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Auth/Login">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Войти
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn-telegram ms-2 text-white" asp-page="/Auth/Login" asp-route-authMethod="telegram">
+                                    <i class="fab fa-telegram me-1"></i>Telegram
+                                </a>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <main role="main" class="flex-shrink-0">
-        @RenderBody()
+
+    <main role="main" class="flex-grow-1 py-3">
+        <div class="container">
+            @RenderBody()
+        </div>
     </main>
-    <footer class="footer mt-auto py-3 bg-light">
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
         <div class="container text-center">
-            <span class="text-muted">&copy; 2025 Fiend Magic</span>
+            <div class="mb-2">
+                <a href="#" class="text-white me-3"><i class="fab fa-telegram fa-lg"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-vk fa-lg"></i></a>
+                <a href="#" class="text-white"><i class="fas fa-envelope fa-lg"></i></a>
+            </div>
+            <span>&copy; @DateTime.Now.Year @(ViewData["SiteName"] ?? "Soltias Site")</span>
         </div>
     </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -22,7 +22,11 @@
                 </select>
 
                 <button id="generateBtn" class="btn btn-primary btn-lg w-100">
-                    <i class="fas fa-random me-2"></i>Получить руну
+                    <i class="fas fa-random me-2"></i>Получить ответ (3 руны)
+                </button>
+
+                <button id="dailyRuneBtn" class="btn btn-info btn-lg w-100 mt-3">
+                    <i class="fas fa-calendar-day me-2"></i>Руна дня
                 </button>
             </div>
         </div>
@@ -40,73 +44,116 @@
 
 @section Scripts {
     <script>
-        document.getElementById('generateBtn').addEventListener('click', async function () {
-            const btn = this;
-            const question = document.getElementById('questionInput').value;
+        document.addEventListener('DOMContentLoaded', function () {
+            const generateBtn = document.getElementById('generateBtn');
+            const dailyRuneBtn = document.getElementById('dailyRuneBtn');
+            const questionInput = document.getElementById('questionInput');
             const resultDiv = document.getElementById('result');
             const loadingDiv = document.getElementById('loading');
-            const sphereId = document.getElementById('sphereSelect').value;
+            const sphereSelect = document.getElementById('sphereSelect');
 
-            if (!question) {
-                alert('Пожалуйста, введите ваш вопрос');
-                return;
-            }
+            generateBtn.addEventListener('click', async function () {
+                await getRunes(3);
+            });
 
-            btn.disabled = true;
-            resultDiv.innerHTML = '';
-            loadingDiv.style.display = 'block';
+            dailyRuneBtn.addEventListener('click', async function () {
+                await getRunes(1, true);
+            });
+            async function getRunes(count, isDaily = false) {
+                const question = questionInput.value.trim();
+                const sphereId = sphereSelect.value; // Получаем выбранную сферу
 
-            try {
-                const url = `/api/runes/random${sphereId ? `?sphereId=${sphereId}` : ''}`;
-                const response = await fetch(url);
-
-                if (!response.ok) {
-                    throw new Error('Ошибка при загрузке данных');
+                if (!isDaily && !question) {
+                    alert('Пожалуйста, введите ваш вопрос');
+                    return;
                 }
 
-                const data = await response.json();
+                // Блокируем элементы управления
+                generateBtn.disabled = true;
+                dailyRuneBtn.disabled = true;
+                if (sphereSelect) sphereSelect.disabled = true;
+                resultDiv.innerHTML = '';
+                loadingDiv.style.display = 'block';
 
-                resultDiv.innerHTML = `
-                                    <div class="col-md-8">
-                                        <div class="card shadow mt-3">
-                                            <div class="card-header bg-primary text-white">
-                                                <h3 class="text-center">${data.name}</h3>
-                                            </div>
-                                            <div class="card-body text-center">
-                                                <p class="text-muted mb-4">Ваш вопрос: "${question}"</p>
-                                                <img src="${data.imageUrl}"
-                                                     class="img-fluid my-3"
-                                                     style="max-height: 200px;"
-                                                     onerror="this.src='/images/default-rune.png'">
-                                                <div class="card-text">${data.description.replace(/\n/g, '<br>')}</div>
-                                                ${data.sphereName ? `<div class="text-muted mt-2">Сфера: ${data.sphereName}</div>` : ''}
-                                            </div>
-                                            <div class="card-footer text-center">
-                                                <button id="generateAgainBtn" class="btn btn-primary">
-                                                    <i class="fas fa-redo me-2"></i>Сгенерировать снова
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
+                try {
+                    let url = isDaily
+                        ? '/api/runes/random?sphereId=4'
+                        : `/api/runes/random?count=${count}`;
 
-                document.getElementById('generateAgainBtn').addEventListener('click', function () {
-                    btn.click();
-                });
-            } catch (error) {
-                resultDiv.innerHTML = `
-                                    <div class="col-md-8">
-                                        <div class="alert alert-danger">
-                                            Ошибка: ${error.message}
-                                        </div>
-                                        <button class="btn btn-warning w-100" onclick="window.location.reload()">
-                                            <i class="fas fa-sync-alt me-2"></i>Попробовать снова
-                                        </button>
+                    // Добавляем sphereId к запросу, если он выбран и это не руна дня
+                    if (!isDaily && sphereId) {
+                        url += `&sphereId=${sphereId}`;
+                    }
+
+                    const response = await fetch(url);
+
+                    if (!response.ok) {
+                        const error = await response.text();
+                        throw new Error(error || 'Ошибка при загрузке данных');
+                    }
+
+                    const data = await response.json();
+
+                    if (isDaily) {
+                        renderRune(data, question, true);
+                    } else {
+                        if (Array.isArray(data)) {
+                            resultDiv.innerHTML = `
+                            <div class="col-12">
+                                <h3 class="text-center mb-4">Ответ на ваш вопрос:</h3>
+                                <p class="text-center text-muted mb-4">"${question}"</p>
+                                <div class="row">
+                                    ${data.map(rune => renderRuneHtml(rune, question)).join('')}
+                                </div>
+                            </div>
+                        `;
+                        } else {
+                            renderRune(data, question);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    resultDiv.innerHTML = `
+                    <div class="col-md-8">
+                        <div class="alert alert-danger">
+                            Ошибка: ${error.message}
+                        </div>
+                        <button class="btn btn-warning w-100" onclick="window.location.reload()">
+                            <i class="fas fa-sync-alt me-2"></i>Попробовать снова
+                        </button>
+                    </div>
+                `;
+                } finally {
+                    loadingDiv.style.display = 'none';
+                    generateBtn.disabled = false;
+                    dailyRuneBtn.disabled = false;
+                    if (sphereSelect) sphereSelect.disabled = false;
+                }
+            }
+
+            function renderRune(runeData, question, isDaily = false) {
+                resultDiv.innerHTML = renderRuneHtml(runeData, question, isDaily);
+            }
+
+            function renderRuneHtml(runeData, question, isDaily = false) {
+                return `
+                            <div class="col-md-${isDaily ? '12' : '4'} mb-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header ${isDaily ? 'bg-warning' : 'bg-primary'} text-white">
+                                        <h3 class="text-center">${runeData.name}${isDaily ? ' (Руна дня)' : ''}</h3>
                                     </div>
-                                `;
-            } finally {
-                loadingDiv.style.display = 'none';
-                btn.disabled = false;
+                                    <div class="card-body text-center">
+                                        ${!isDaily && question ? `<p class="text-muted mb-4">${question}</p>` : ''}
+                                        <img src="${runeData.imageUrl || '/images/default-rune.png'}"
+                                             class="img-fluid my-3"
+                                             style="max-height: 200px;"
+                                             onerror="this.src='/images/default-rune.png'">
+                                        <div class="card-text">${(runeData.description || '').replace(/\n/g, '<br>')}</div>
+                                        ${runeData.sphereName ? `<div class="text-muted mt-2">Сфера: ${runeData.sphereName}</div>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
             }
         });
     </script>

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Article.cs
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Http;
 
@@ -49,6 +50,15 @@ namespace webb_tst_site3.Models
         [Display(Name = "Опубликовано")]
         public bool IsPublished { get; set; } = false;
 
+        [Display(Name = "Порядок отображения")]
+        public int? DisplayOrder { get; set; } = 0;  // Оставьте как int
+
+        [Display(Name = "Тип контента")]
+        public ContentType ContentType { get; set; } = ContentType.Article;
+
+        [Display(Name = "Содержимое статьи")]
+        public string? Content { get; set; }
+
         public List<string> GetHashtagsList()
         {
             if (string.IsNullOrWhiteSpace(Hashtags))
@@ -60,5 +70,12 @@ namespace webb_tst_site3.Models
                           .Distinct()
                           .ToList();
         }
+    }
+
+    public enum ContentType
+    {
+        Article,    // Обычная статья
+        Section,    // Раздел (контейнер для других статей)
+        Link        // Ссылка на внешний ресурс
     }
 }

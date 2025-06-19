@@ -1,45 +1,94 @@
 ﻿@page
 @model webb_tst_site3.Pages.Admin.Articles.CreateModel
 @{
-    ViewData["Title"] = "Добавить статью";
+    ViewData["Title"] = Model.Article.ContentType switch
+    {
+        webb_tst_site3.Models.ContentType.Section => "Создать новый раздел",
+        webb_tst_site3.Models.ContentType.Link => "Добавить новую ссылку",
+        _ => "Создать новую статью"
+    };
 }
 
 <div class="container">
-    <h2>@ViewData["Title"]</h2>
+    <h1>@ViewData["Title"]</h1>
+
     <form method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label asp-for="Article.Title"></label>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input type="hidden" asp-for="Article.ContentType" />
+
+        <div class="form-group">
+            <label asp-for="Article.Title" class="control-label"></label>
             <input asp-for="Article.Title" class="form-control" />
             <span asp-validation-for="Article.Title" class="text-danger"></span>
         </div>
-        <div class="mb-3">
-            <label asp-for="Article.Description"></label>
-            <textarea asp-for="Article.Description" class="form-control"></textarea>
+
+        <div class="form-group">
+            <label asp-for="Article.Description" class="control-label"></label>
+            <textarea asp-for="Article.Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Article.Description" class="text-danger"></span>
         </div>
-        <div class="mb-3">
-            <label asp-for="Article.Url"></label>
-            <input asp-for="Article.Url" class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label asp-for="Article.Hashtags"></label>
-            <input asp-for="Article.Hashtags" class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label for="image">Изображение</label>
-            <input asp-for="Article.ImageFile" type="file" class="form-control" id="image" />
-        </div>@* 
-        <div class="mb-3">
-            <label asp-for="ParentId">Родительская статья</label>
-            <select asp-for="ParentId" asp-items="Model.Parents" class="form-select">
-                <option value="">(верхний уровень)</option>
+
+        @if (Model.Article.ContentType == webb_tst_site3.Models.ContentType.Link)
+        {
+            <div class="form-group">
+                <label asp-for="Article.Url" class="control-label">URL ссылки</label>
+                <input asp-for="Article.Url" class="form-control" />
+                <span asp-validation-for="Article.Url" class="text-danger"></span>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label asp-for="Article.Url" class="control-label">URL статьи</label>
+                <input asp-for="Article.Url" class="form-control" />
+                <span asp-validation-for="Article.Url" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Article.ImageFile" class="control-label"></label>
+                <input asp-for="Article.ImageFile" type="file" class="form-control-file" />
+                <span asp-validation-for="Article.ImageFile" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Article.Hashtags" class="control-label"></label>
+                <input asp-for="Article.Hashtags" class="form-control" />
+                <span asp-validation-for="Article.Hashtags" class="text-danger"></span>
+            </div>
+
+            @if (Model.Article.ContentType == webb_tst_site3.Models.ContentType.Article)
+            {
+                <div class="form-group">
+                    <label asp-for="Article.Content" class="control-label"></label>
+                    <textarea asp-for="Article.Content" class="form-control" rows="10"></textarea>
+                    <span asp-validation-for="Article.Content" class="text-danger"></span>
+                </div>
+            }
+        }
+
+        <div class="form-group">
+            <label asp-for="Article.ParentId" class="control-label"></label>
+            <select asp-for="Article.ParentId" asp-items="Model.Parents" class="form-control">
+                <option value="">(без родителя)</option>
             </select>
-        </div> *@
-        <div class="form-check mb-3">
-            <input asp-for="Article.IsPublished" class="form-check-input" />
-            <label asp-for="Article.IsPublished" class="form-check-label">Опубликовано</label>
+            <span asp-validation-for="Article.ParentId" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-        <a asp-page="Index" class="btn btn-secondary">Отмена</a>
+
+        <div class="form-group form-check">
+            <input class="form-check-input" asp-for="Article.IsPublished" />
+            <label class="form-check-label" asp-for="Article.IsPublished"></label>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Создать" class="btn btn-primary" />
+            <a asp-page="Index" class="btn btn-secondary">Отмена</a>
+        </div>
     </form>
 </div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

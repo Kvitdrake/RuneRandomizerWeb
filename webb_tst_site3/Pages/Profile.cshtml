@@ -1,0 +1,149 @@
+﻿@page
+@model webb_tst_site3.Pages.ProfileModel
+@{
+    ViewData["Title"] = "Профиль пользователя";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-user-circle me-2"></i>Профиль пользователя
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            @if (!string.IsNullOrEmpty(Model.UserPhotoUrl))
+                            {
+                                <img src="@Model.UserPhotoUrl" class="img-thumbnail mb-3" style="width: 200px; height: 200px; object-fit: cover;" alt="Фото профиля">
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-secondary mb-3 d-flex align-items-center justify-content-center mx-auto"
+                                     style="width: 200px; height: 200px;">
+                                    <i class="fas fa-user fa-5x text-light"></i>
+                                </div>
+                            }
+
+                            @if (Model.IsTelegramUser)
+                            {
+                                <div class="mt-2">
+                                    <span class="badge bg-primary">
+                                        <i class="fab fa-telegram me-1"></i> Telegram
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-8">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row" class="w-25">Имя пользователя</th>
+                                            <td>@Model.Username</td>
+                                        </tr>
+                                        @if (!string.IsNullOrEmpty(Model.FirstName))
+                                        {
+                                            <tr>
+                                                <th scope="row">Имя</th>
+                                                <td>@Model.FirstName</td>
+                                            </tr>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.LastName))
+                                        {
+                                            <tr>
+                                                <th scope="row">Фамилия</th>
+                                                <td>@Model.LastName</td>
+                                            </tr>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.TelegramUsername))
+                                        {
+                                            <tr>
+                                                <th scope="row">Telegram</th>
+                                                <td>
+                                                    <a href="https://t.me/@Model.TelegramUsername" target="_blank">
+                                                        @@@Model.TelegramUsername
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <th scope="row">Роль</th>
+                                            <td>
+                                                <span class="badge @(Model.IsAdmin ? "bg-danger" : "bg-success")">
+                                                    @Model.Role
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Дата регистрации</th>
+                                            <td>@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Последний вход</th>
+                                            <td>@Model.LastLoginAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                @if (!Model.IsTelegramUser)
+                                {
+                                    <a href="/Auth/ChangePassword" class="btn btn-outline-primary">
+                                        <i class="fas fa-key me-1"></i> Сменить пароль
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Пароль не требуется для Telegram-аккаунта
+                                    </span>
+                                }
+
+                                <a href="/Auth/Logout" class="btn btn-danger">
+                                    <i class="fas fa-sign-out-alt me-1"></i> Выйти
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.ShowTelegramConnect)
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="card-title mb-0">
+                            <i class="fab fa-telegram me-2"></i>Привязать Telegram
+                        </h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="lead">Вы можете привязать Telegram к вашему аккаунту для быстрого входа</p>
+                        <a href="@Model.TelegramBotConnectUrl" class="btn btn-telegram btn-lg" style="background-color: #0088cc; color: white;">
+                            <i class="fab fa-telegram me-2"></i> Привязать Telegram
+                        </a>
+                        <p class="text-muted mt-2">После нажатия кнопки вы будете перенаправлены в Telegram</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .table th {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-telegram:hover {
+            background-color: #0077b5 !important;
+            color: white !important;
+        }
+    </style>
+}
