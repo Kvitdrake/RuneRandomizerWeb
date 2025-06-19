@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: rune-randomizer
+    env: dotnet
+    buildCommand: cd webb_tst_site3 && dotnet publish -c Release -o ../publish
+    startCommand: cd publish && dotnet webb_tst_site3.dll
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
